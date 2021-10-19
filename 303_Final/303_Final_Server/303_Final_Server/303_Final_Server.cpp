@@ -41,16 +41,18 @@ int main()
 	}
 
 	//TCP socket RECEIVE
-	char data[6];
+	char data[30];
 	std::size_t received;
 
 	// TCP socket:
-	if (client.receive(data, 6, received) != sf::Socket::Done)
+	if (client.receive(data, 30, received) != sf::Socket::Done)
 	{
 		std::cout << "error in receive\n";
 	}
 	else {
 		std::cout << "succesfully received\n";
+		std::cout << "Message is:\n";
+		std::cout << data<<std::endl;
 	}
 	
 	std::cout << "Received " << received << " bytes" << std::endl;

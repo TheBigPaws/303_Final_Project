@@ -1,2 +1,2 @@
 ﻿  303_Final.cpp
-C:\Users\User\source\repos\303_Final\303_Final\303_Final.cpp(3,10): fatal error C1083: Cannot open include file: 'SFML/Network.hpp': No such file or directory
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final\303_Final\303_Final.cpp(3,10): fatal error C1083: Cannot open include file: 'SFML/Network.hpp': No such file or directory
