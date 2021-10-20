@@ -1,0 +1,4 @@
+﻿  303_Final.cpp
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final\303_Final\303_Final.cpp(15,99): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final\303_Final\303_Final.cpp(39,9): warning C4018: '<': signed/unsigned mismatch
+  303_Final.vcxproj -> D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final\Debug\303_Final.exe
