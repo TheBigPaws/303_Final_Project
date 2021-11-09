@@ -18,24 +18,18 @@
     <ClCompile Include="303_Final.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Server.cpp">
+    <ClCompile Include="CustomPackets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Client.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkExtensionBase.cpp">
+    <ClCompile Include="P2P_Network.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Server.h">
+    <ClInclude Include="CustomPackets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Client.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NetworkExtensionBase.h">
+    <ClInclude Include="P2P_Network.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

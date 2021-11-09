@@ -1,34 +1,42 @@
 #include <iostream>
 #include <string>
 #include <SFML/Network.hpp>
-#include "Server.h"
-#include "Client.h"
+#include "P2P_Network.h"
 #include <SFML/Window/Keyboard.hpp>
 
 std::string outgoing_message = "ajaj";
 bool isHost;
 
-Server server;
-Client client;
+P2P_Network networkModule;
 
 int main()
 {
-	std::cout << "Do You want to host(1) or connect(0)?";
+	std::cout << "Do You want to receive(1) or send(0)?";
 
 	std::cin >> isHost;
+	networkModule.setup();
 
 	if (isHost) {// ------------------- HOST CODE ---------------------------
-		server.setup(52000);
+		
 		
 		while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-			server.update();
-			
+			networkModule.update();
 		}
 	}
 	else { // -----------------------------CLIENT CODE -----------------------------
 	
-		client.connectToHost_TCP(sf::IpAddress::getLocalAddress().toString());
-		client.bind_UDP(52000);
+		sf::IpAddress ipadr;
+		unsigned short port_;
+
+		std::cout << "enter IP to connect to: ";
+
+		std::cin >> ipadr;
+
+		std::cout << "enter port to connect to: ";
+
+		std::cin >> port_;
+
+		networkModule.connect_TCP(ipadr,port_);
 
 		while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
 
@@ -36,8 +44,8 @@ int main()
 	
 			std::cin >> outgoing_message;
 			
-			client.send_UDP();
-			client.send_TCP();
+			networkModule.send_UDP();
+			networkModule.send_TCP();
 		}
 		
 	}
