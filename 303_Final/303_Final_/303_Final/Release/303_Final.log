@@ -1,0 +1,14 @@
+﻿  303_Final.cpp
+  Client.cpp
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\Client.cpp(9,31): error C2065: 'socket': undeclared identifier
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\Client.cpp(9,75): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  NetworkExtensionBase.cpp
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\NetworkExtensionBase.cpp(66,70): error C2511: 'void NetworkExtensionBase::send_TCP_(sf::TcpSocket)': overloaded member function not found in 'NetworkExtensionBase'
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\NetworkExtensionBase.h(9): message : see declaration of 'NetworkExtensionBase'
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\NetworkExtensionBase.cpp(70,6): error C2065: 'recepient_socket_': undeclared identifier
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\NetworkExtensionBase.cpp(70,29): error C2597: illegal reference to non-static member 'NetworkExtensionBase::outgoingPacket'
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\NetworkExtensionBase.h(17): message : see declaration of 'NetworkExtensionBase::outgoingPacket'
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\NetworkExtensionBase.cpp(70,24): error C3861: 'send': identifier not found
+  Server.cpp
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\Server.cpp(44,2): error C3861: 'receive_TCP': identifier not found
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\Server.cpp(46,2): error C3861: 'receive_UDP': identifier not found
