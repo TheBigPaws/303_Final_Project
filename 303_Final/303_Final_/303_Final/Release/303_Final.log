@@ -1,9 +1,10 @@
-﻿  303_Final.cpp
-  P2P_Network.cpp
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\P2P_Network.cpp(148,20): warning C4018: '<': signed/unsigned mismatch
+﻿  P2P_Network.cpp
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\P2P_Network.cpp(40,20): warning C4018: '<': signed/unsigned mismatch
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\P2P_Network.cpp(61,20): warning C4018: '<': signed/unsigned mismatch
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\303_Final\P2P_Network.cpp(181,20): warning C4018: '<': signed/unsigned mismatch
   Generating code
-  4 of 175 functions ( 2.3%) were compiled, the rest were copied from previous compilation.
+  0 of 180 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  303_Final.vcxproj -> D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\Release\303_Final.exe
+LINK : fatal error LNK1201: error writing to program database 'D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\303_Final_\Release\303_Final.pdb'; check for insufficient disk space, invalid path, or insufficient privilege

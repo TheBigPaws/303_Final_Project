@@ -46,6 +46,9 @@ int main()
 			
 			networkModule.send_UDP();
 			networkModule.send_TCP();
+
+			networkModule.update();
+
 		}
 		
 	}

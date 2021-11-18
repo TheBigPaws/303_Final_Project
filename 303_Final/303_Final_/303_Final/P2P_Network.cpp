@@ -7,16 +7,15 @@ void P2P_Network::setup() {
 
 	//SET UP THIS MACHINE'S UDP PORT -------------------------------
 
-	myUDPport = sf::Socket::AnyPort;
 	//myIpAdress = sf::IpAddress::getPublicAddress(); WILL BE USED IN FINAL VERSION
 	myIpAdress = sf::IpAddress::getLocalAddress(); //used rn for local build
 
-	if (udpSocket.bind(myUDPport) != sf::Socket::Done)
+	if (udpSocket.bind(sf::Socket::AnyPort) != sf::Socket::Done)
 	{
 		//error
 	}
 	else {
-		std::cout << "connected locally to port "<<myUDPport<<std::endl;
+		std::cout << "connected locally to port "<<udpSocket.getLocalPort()<<std::endl;
 	}
 	udpSocket.setBlocking(false);
 
@@ -43,9 +42,11 @@ void P2P_Network::send_UDP() {
 		sf::IpAddress recepientIP = TCP_connections.at(i)->getRemoteAddress();
 		unsigned short recepientPort = TCP_connections.at(i)->getRemotePort();
 
+		std::cout << "sending udp to " << recepientIP.toString() << " on port " << recepientPort << std::endl;
+
 		if (udpSocket.send(outgoingPacket, recepientIP, recepientPort) != sf::Socket::Done)
 		{
-			//error
+			std::cout << "Failed to send UDP message to client " << i << std::endl;
 		}
 		else {
 			std::cout << "succesfully sent (as UDP) to client " << i << std::endl;
@@ -61,7 +62,7 @@ void P2P_Network::send_TCP() {
 		// TCP socket SEND:
 		if (TCP_connections.at(i)->send(outgoingPacket) != sf::Socket::Done)
 		{
-			std::cout << "[ ! ] Failed to send message [ ! ]\n";
+			std::cout << "Failed to send UDP message to client " << i << std::endl;
 		}
 		else {
 			std::cout << "succesfully sent (as TCP) to client " << i << std::endl;
@@ -111,25 +112,25 @@ void P2P_Network::acceptClient_TCP() {
 	}
 	else {
 		TCP_connections.push_back(protot);
-
-		if (TCP_connections.size() >= 2) {
-			//Send data about other peers. Structure:
-		// (bool continue 1) / (Ipadress) / (port) ... (bool continue 0
-			sf::Packet otherConnections;
-			sf::Uint16 nextCon = 1;
-			for (int i = 0; i < TCP_connections.size() - 1; i++) {
-				otherConnections << nextCon << TCP_connections.at(i)->getRemoteAddress().toString() << TCP_connections.at(i)->getRemotePort();
-			}
-			nextCon = 0;
-			otherConnections << nextCon;
-			TCP_connections.back()->setBlocking(true);
-			TCP_connections.back()->send(otherConnections);
-			std::cout << "succesfully sent thru data of other clients\n";
-		}
-		
+		//TCP_connections.back()->setBlocking(false);
+		std::cout << "succesfully accepted Client to slot " << TCP_connections.size() - 1 << ".\n";
+		//sf::Packet otherConnections;
+		//sf::Uint16 nextCon = 1;
+		//
+		//if (TCP_connections.size() > 1) { //if there are more peers
+		//	//Send data about other peers. Structure:
+		//	// (bool continue 1) / (Ipadress) / (port) ... (bool continue 0
+		//	for (int i = 0; i < TCP_connections.size() - 1; i++) {//appends all the IP addresses and ports of all except last(this) element
+		//		otherConnections << nextCon << TCP_connections.at(i)->getRemoteAddress().toString() << TCP_connections.at(i)->getRemotePort();
+		//	}
+		//	
+		//	TCP_connections.back()->setBlocking(true);
+		//	std::cout << "succesfully sent thru data of other clients\n";
+		//}
+		//nextCon = 0;
+		//otherConnections << nextCon;
+		//TCP_connections.back()->send(otherConnections);
 		TCP_connections.back()->setBlocking(false);
-
-		std::cout << "succesfully accepted Client to slot " << TCP_connections.size() << ".\n";
 
 	}
 }
@@ -139,58 +140,47 @@ void P2P_Network::connect_TCP(sf::IpAddress clientIP, unsigned short clientPort)
 
 	sf::TcpSocket* protot = new sf::TcpSocket;
 
-	//tries to connect 5 times before it gives up
-	for (int i = 0; i < 3; i++) {
-		sf::Socket::Status status = protot->connect(clientIP, clientPort, sf::seconds(5)); //tries to connect every 5 seconds, 3 times
-		if (status != sf::Socket::Done)
-		{
-			std::cout << "[ ! ] Couldn't connect to server. [ ! ]\n";
-			if (i != 2) {
-				std::cout << "Trying again...\n";
-			}
-			else {
-				std::cout << "Connecting Unsuccessful\n";
-			}
-		}
-		else {
-			std::cout << "Succesfully connected to server!\n";
-			TCP_connections.push_back(protot);
+	//tries to connect
+	sf::Socket::Status status = protot->connect(clientIP, clientPort); 
+	if (status != sf::Socket::Done)
+	{
+		std::cout << "[ ! ] Couldn't connect to server. [ ! ]\n";
+	}
+	else {
+		std::cout << "Succesfully connected to server!\n";
+		TCP_connections.push_back(protot);
 
-			TCP_connections.back()->setBlocking(true);
-			TCP_connections.back()->receive(incomingPacket);
+		//TCP_connections.back()->receive(incomingPacket); //get data about other connections
+		TCP_connections.back()->setBlocking(false);
+		//
+		//sf::Uint16 nextCon;//connect to others
+		//std::string ipAddr;
+		//unsigned short port_;
+		//
+		//incomingPacket >> nextCon;
+		//
+		//while (nextCon == 1) {
+		//	incomingPacket >> ipAddr >> port_;
+		//	sf::TcpSocket* protot_ = new sf::TcpSocket;
+		//	TCP_connections.push_back(protot_);
+		//	TCP_connections.back()->connect(ipAddr, port_);
+		//	TCP_connections.back()->setBlocking(false);
+		//	incomingPacket >> nextCon;
+		//	std::cout << "added con\n";
+		//}
 
-			sf::Uint16 nextCon;
-			std::string ipAddr;
-			unsigned short port_;
-
-			while (true) {
-				incomingPacket >> nextCon;
-
-				if (nextCon == 1) {
-					std::cout << "binding other client" << std::endl;
-					incomingPacket >> ipAddr >> port_;
-
-					bool newConnection = true;
-
-					for (int i = 0; i < TCP_connections.size(); i++) {
-
-					}
-				}
-				else { std::cout << "bound all"; break; }
-			}
-			TCP_connections.back()->setBlocking(false);
-			break;
-		}
+		
 	}
 }
+
 
 void P2P_Network::update() {
 
 	acceptClient_TCP();
 
 	for (int i = 0; i < TCP_connections.size(); i++) {
-		receive_TCP(i);
 		receive_UDP(i);
+		receive_TCP(i);
 	}
 	
 }
