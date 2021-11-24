@@ -4,13 +4,15 @@
 bool isHost;
 P2P_Network networkModule;
 
-sf::Packet pkt_;
-
+sf::Packet test_pkt_;
+header test_pkt_hdr_;
+std::vector<Peer*> * peers;
 int main()
 {
-	
-	pkt_ << 1;
-	pkt_ << "banana";
+	test_pkt_hdr_.game_elapsed_time = 0.0f;
+	test_pkt_hdr_.information_amount = 1;
+	test_pkt_hdr_.information_type = 5;
+	test_pkt_ << test_pkt_hdr_ << "test text";
 
 	networkModule.setup(); 
 
@@ -20,18 +22,14 @@ int main()
 
 
 		//LISTEN TO NEW PEERS, if succesful share peers with all
-		if (networkModule.accept_TCP_new() == true) { // always listen to new connections
+		networkModule.accept_TCP_new();
 
-
-		}
-
-		//std::cout << "rcv all func still worked after acceptnew\n";
 
 
 		//OPENS THE CONNECT INTERFACE
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)) { //   C for connect
 
-			sf::IpAddress connectTo = sf::IpAddress::getLocalAddress();
+			sf::IpAddress connectTo = sf::IpAddress::getLocalAddress(); //change when multi pc
 			//std::cout << "what IP do you want to connect to?\n";
 			//std::cin >> connectTo;
 
@@ -40,27 +38,30 @@ int main()
 			std::cin >> port_;
 
 
-			if (networkModule.connect_TCP_to(connectTo, port_) == true) {
-
-
-			}
+			networkModule.connect_TCP_to(connectTo, port_, 1);
 			
 		}
 
-		//std::cout << "rcv all func still worked after send t\n";
+		//should run only once ~ms
+		networkModule.sendAll_TCP();
 
 		//LISTEN TO MESSAGES FROM ALL
 		networkModule.receiveAll_TCP();
 
+		networkModule.decodePackets();
 
-		//SEND A MESSAGE IF THE USER PRESSES S
+		//SEND A TCP MESSAGE IF THE USER PRESSES S
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) { //   S for send
-			networkModule.sendAll_TCP(pkt_);
+			networkModule.pushOutPacket_all(test_pkt_);
 		}
 
-		//std::cout << "rcv all func still worked after sendall \n";
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::T)) { //   S for send
+			peers = networkModule.getPeerReferences();
+		}
 
-
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) { //   S for send
+			networkModule.`getPeerReferences()->empty();
+		}
 	}
 
 	while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {

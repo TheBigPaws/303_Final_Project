@@ -3,37 +3,31 @@
 class P2P_Network : public PacketBase
 {
 private:
-	//  General information
-	//sf::IpAddress myIpAdress;
-	//unsigned short myUDPport;
-	Peer myData; //only some variables will be used
+	std::string myName;
 
 	//  Sockets
-	//sf::UdpSocket udpSocket;
 	std::vector<Peer *> peers;
 
-	sf::TcpListener listener;
+	sf::TcpListener mylistener;
 
-	//  Packet storage
-	sf::Packet outgoingPacket;
-	sf::Packet incomingPacket;
+
 public:
 	////setup functions
 	void setup();
-	//
-	////send & receive functions. Both send/receive to/fro all the clients
-	//void send_UDP();
-	//void receive_UDP();
 
-	bool accept_TCP_new();
-	bool connect_TCP_to(sf::IpAddress hostIP, unsigned short port);
+	void accept_TCP_new();
+	void connect_TCP_to(sf::IpAddress hostIP, unsigned short port, bool sharePeers_);
 
-	void receiveAll_TCP();
-	void sendAll_TCP(sf::Packet packet);
+	void receiveAll_TCP();//receive all packets and sort them depending on where they're from
+	void sendAll_TCP(); //send all packets that were built up in the last ~ms
+
+	void pushOutPacket(std::string name,sf::Packet packet);
+	void pushOutPacket_all(sf::Packet packet);
 
 	void sharePeers();
-	void receivePeers();
 
-	void decodePacket(sf::Packet packet);
+	void decodePackets();
+
+	std::vector<Peer * > getPeerReferences() { return peers; }
 };
 
