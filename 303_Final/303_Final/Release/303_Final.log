@@ -1,6 +1,0 @@
-﻿  303_Final.cpp
-D:\Users\User\Desktop\303_Final\303_Final\PacketBase.h(2,10): fatal error C1083: Cannot open include file: 'SFML/Network.hpp': No such file or directory
-  P2P_Network.cpp
-D:\Users\User\Desktop\303_Final\303_Final\PacketBase.h(2,10): fatal error C1083: Cannot open include file: 'SFML/Network.hpp': No such file or directory
-  PacketBase.cpp
-D:\Users\User\Desktop\303_Final\303_Final\PacketBase.h(2,10): fatal error C1083: Cannot open include file: 'SFML/Network.hpp': No such file or directory
