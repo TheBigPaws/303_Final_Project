@@ -7,7 +7,7 @@ Level::Level(sf::RenderWindow* hwnd, Input* in)
 
 
 
-	view1.reset(sf::FloatRect(0, 0, 1200, 675));
+	//view1.reset(sf::FloatRect(0, 0, window->getSize().x, window->getSize().y));
 
 	mainMenu.setup(hwnd, in);
 	lobby.setup(hwnd, in);
@@ -65,13 +65,6 @@ void Level::handleInput(float dt)
 		window->close();
 	}
 
-	if (input->isKeyDown(sf::Keyboard::D)) {
-		view1.move(100.0f * dt, 0.0f);		
-	}
-
-	if (input->isKeyDown(sf::Keyboard::A)) {
-		view1.move(-100.0f * dt, 0.0f);
-	}
 
 	if (input->isKeyDown(sf::Keyboard::P)) {
 		input->setKeyUp(sf::Keyboard::P);

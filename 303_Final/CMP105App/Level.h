@@ -42,9 +42,5 @@ private:
 	Input* input;
 	AudioManager* audio;
 	
-	GameState gameState = MAIN_MENU;
-	
-
-
-	sf::View view1;
+	GameState gameState = GAME;
 };

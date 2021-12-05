@@ -1,4 +1,4 @@
-﻿  Lobby.cpp
+﻿  Game.cpp
 D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunctions.h(16,41): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
@@ -19,8 +19,7 @@ D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunct
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.h(64,24): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(7,98): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(28,71): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
           with
           [
               T=unsigned int
@@ -29,7 +28,7 @@ D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(7
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(7,74): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(28,50): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
           with
           [
               T=unsigned int
@@ -38,42 +37,39 @@ D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(7
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(16,82): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(123,113): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(39,48): warning C4244: '=': conversion from 'T' to 'int', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(123,64): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(40,48): warning C4244: '=': conversion from 'T' to 'int', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(126,51): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Main.cpp
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\P2P_Network.h(39,21): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunctions.h(16,41): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(56,123): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunctions.h(16,34): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(56,56): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunctions.h(17,65): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(67,104): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunctions.h(17,46): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(67,69): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(69,38): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(69,33): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(70,59): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.h(66,24): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+  Generating Code...
   CMP105App.vcxproj -> D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\x64\Debug\CMP105App.exe
