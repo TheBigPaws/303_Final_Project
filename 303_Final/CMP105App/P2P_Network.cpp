@@ -21,6 +21,10 @@ void P2P_Network::setup() {
 	std::cout << "This device's local IP address is " << sf::IpAddress::getLocalAddress() << std::endl;
 	std::cout << "This device's public IP address is " << sf::IpAddress::getPublicAddress() << std::endl;
 	std::cout << "\n*** Setup complete ***\n\n" << std::endl;
+
+	myInfo.IpAddress = sf::IpAddress::getLocalAddress();
+	myInfo.TCP_listener_Port = mylistener.getLocalPort();
+
 }
 
 
@@ -35,19 +39,26 @@ bool P2P_Network::accept_TCP_new() {
 	else {
 		
 		//immediately (before we set blocking false) get the connected peer's port
-		sf::Packet connectedPeerListenerPort;
+		sf::Packet connectedPeerInfo;
 		sf::Uint16 should_share_p, pport;
-		peers.back()->socket.receive(connectedPeerListenerPort);
-		connectedPeerListenerPort >> pport;
-		connectedPeerListenerPort >> should_share_p;
+		std::string acceptedPeerName;
+		peers.back()->socket.receive(connectedPeerInfo);
+		connectedPeerInfo >> pport;
+		connectedPeerInfo >> acceptedPeerName;
+		connectedPeerInfo >> should_share_p;
 
 		//set up the new peer's info
 		peers.back()->IpAddress = peers.back()->socket.getRemoteAddress();
 		peers.back()->TCP_localPort = peers.back()->socket.getLocalPort();
 		peers.back()->TCP_remotePort = peers.back()->socket.getRemotePort();
+		peers.back()->name = acceptedPeerName;
 		peers.back()->TCP_listener_Port = (unsigned short)pport; 
-		peers.back()->socket.setBlocking(false);
 
+		sf::Packet myName;
+		myName << myInfo.name;
+		peers.back()->socket.send(myName);
+
+		peers.back()->socket.setBlocking(false);
 		std::cout << "succesfully accepted Client " << peers.size() <<" at ip "<< peers.back()->IpAddress <<" with listener port "<< peers.back()->TCP_listener_Port << std::endl;
 
 		//share peers with the new 
@@ -82,6 +93,7 @@ bool P2P_Network::connect_TCP_to(sf::IpAddress hostIP, unsigned short port,bool 
 		//immediately share this app's listener port
 		sf::Packet myListenerPortinfo;
 		myListenerPortinfo << (sf::Uint16)mylistener.getLocalPort();
+		myListenerPortinfo << myInfo.name;
 		myListenerPortinfo << (sf::Uint16)sharePeers_;
 
 
@@ -92,13 +104,20 @@ bool P2P_Network::connect_TCP_to(sf::IpAddress hostIP, unsigned short port,bool 
 
 		peers.back()->socket.send(myListenerPortinfo);
 
+		sf::Packet namePacket;
+
+		peers.back()->socket.receive(namePacket);
+		std::string theirName;
+
+		namePacket >> theirName;
+		peers.back()->name = theirName;
 
 		peers.back()->socket.setBlocking(false);
 
 		//set up another slot for a potential peer
 		peers.push_back(new Peer);
 
-		std::cout << "Succesfully connected to "<<hostIP <<"on port "<<port << std::endl;
+		std::cout << "Succesfully connected to "<<hostIP <<"on port "<<port << " whith name "<< theirName << std::endl;
 
 		return true;
 
@@ -154,6 +173,7 @@ void P2P_Network::sharePeers() {
 	}
 	sf::Packet peerInfoPacket;
 	header hdr_;
+	hdr_.senderName = myName;
 	hdr_.game_elapsed_time = 0.0f;
 	hdr_.information_type = (sf::Uint16)NW_INFO;
 	hdr_.information_amount = (sf::Uint16)peers.size() - 1; //-1 so as not to send client its own data
@@ -164,6 +184,7 @@ void P2P_Network::sharePeers() {
 		peerNWinfo info;
 		info.ipAddress = peers.at(i)->IpAddress.toInteger();
 		info.listenerPort = (sf::Uint16)peers.at(i)->TCP_listener_Port;
+		info.name = peers.at(i)->name;
 
 		peerInfoPacket << info;
 		std::cout << "sharing data about a peer with IP "<<peers.at(i)->IpAddress << " with listener port " << peers.at(i)->TCP_listener_Port << std::endl;
@@ -179,49 +200,27 @@ void P2P_Network::sharePeers() {
 
 }
 
-void P2P_Network::decodePackets() {
-
-	sf::Uint32 int32holder;
-	char * charbbuffer = new char;
-	sf::Uint16 nextDataHeader;
-	peerNWinfo info_;
-	//deal with header here
-	
-	header header_;
-	sf::Packet packet_;
-
-	bool keep_decoding = true;
-
-	while (keep_decoding) {
-		keep_decoding = false;//while stopper
-		for (int i = 0; i < peers.size() - 1; i++) { //-1 to compensate for the last vector slot being a blank
-			if (peers.at(i)->receivedPackets.size() > 0) {//if any of the peers still has something to send
-				keep_decoding = true;//keep sending
-				packet_ = peers.at(i)->receivedPackets.front();
-				packet_ >> header_;
-				for (int i = 0; i < header_.information_amount; i++) {
-					switch (header_.information_type) {
-					case NW_INFO:
-						packet_ >> info_;
-						connect_TCP_to(sf::IpAddress(info_.ipAddress), (unsigned short)info_.listenerPort, 0);
-						break;
-					case TEST:
-						packet_ >> charbbuffer;
-						std::cout << charbbuffer << std::endl;
-						break;
-					default:
-						break;
-					}
-				}
-				peers.at(i)->receivedPackets.pop();
-
-			}
+bool P2P_Network::anyPacketsToRead() {
+	for (int i = 0; i < peers.size() - 1; i++) { //-1 to compensate for the last vector slot being a blank
+		if (peers.at(i)->receivedPackets.size() > 0) {//if any of the peers still has something to send
+			return true;
 		}
 	}
-	//std::cout << "\ndecoding went well\n";
+	return false;
 }
 
 
+sf::Packet P2P_Network::getPacketToRead() {
+	sf::Packet retPacket;
+	for (int i = 0; i < peers.size() - 1; i++) { //-1 to compensate for the last vector slot being a blank
+		if (peers.at(i)->receivedPackets.size() > 0) {//if any of the peers still has something to send
+			retPacket = peers.at(i)->receivedPackets.front();
+			peers.at(i)->receivedPackets.pop();
+			break;
+		}
+	}
+	return retPacket;
+}
 
 void P2P_Network::pushOutPacket_all(sf::Packet packet) {
 	for (int i = 0; i < peers.size() - 1; i++) {

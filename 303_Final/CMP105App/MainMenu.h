@@ -12,10 +12,9 @@ private:
 	Input* input;
 	sf::Font arialF;
 
-	sf::Text gameTitletxt,connectPromptIP, connectPromptPort;
+	sf::Text gameTitletxt,connectPromptIP, connectPromptPort,enterNameText;
 	bool showConnectPrompt = false;
 	sf::RectangleShape connectPrompt;
-	std::string enteredIp, enteredPort;
 
 	//colored title
 	int titleColours[3];
@@ -24,14 +23,15 @@ private:
 	void updateTitleColours();
 
 	//interactive elements
-	TextField IPfield,PortField;
+	TextField IPfield,PortField,NameField;
 	Button connectButton,hostButton,connectCloseButton;
 public:
-	bool goToLobby = false;
-	bool attemptConnect = false;
 	void setup(sf::RenderWindow* window_, Input* input_);
 	void render();
 	void update(float dt);
+
+	bool goToLobby = false;
+	bool attemptConnect = false;
 
 	std::string getEnteredIP() {
 		return IPfield.getString();
@@ -39,8 +39,12 @@ public:
 	std::string getEnteredPort() {
 		return PortField.getString();
 	}
+	std::string getEnteredName() {
+		return NameField.getString();
+	}
 	void resetInput(bool wasWrong) {
 		IPfield.clearTextField(wasWrong);
 		PortField.clearTextField(wasWrong);
 	}
+
 };

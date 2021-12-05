@@ -8,6 +8,7 @@
 
 #include "MainMenu.h"
 #include "Lobby.h"
+#include "Game.h"
 
 enum GameState{MAIN_MENU,LOBBY,GAME};
 
@@ -20,13 +21,17 @@ public:
 	void update(float dt);
 	void render();
 
+	void decodePacket(sf::Packet packet);
+
 private:
 	// Default functions for rendering to the screen.
 	void beginDraw();
 	void endDraw();
 
+
 	MainMenu mainMenu;
 	Lobby lobby;
+	Game game;
 
 	P2P_Network networkModule;
 	sf::Packet test_pkt_;
@@ -38,6 +43,8 @@ private:
 	AudioManager* audio;
 	
 	GameState gameState = MAIN_MENU;
+	
+
 
 	sf::View view1;
 };

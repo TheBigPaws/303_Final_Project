@@ -157,7 +157,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Environment.cpp" />
     <ClCompile Include="Framework\Animation.cpp" />
     <ClCompile Include="Framework\AudioManager.cpp" />
     <ClCompile Include="Framework\Collision.cpp" />
@@ -166,6 +165,7 @@
     <ClCompile Include="Framework\GameObject.cpp" />
     <ClCompile Include="Framework\SoundObject.cpp" />
     <ClCompile Include="Framework\Vector.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="HelperFunctions.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Lobby.cpp" />
@@ -179,7 +179,6 @@
     <Text Include="README.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Environment.h" />
     <ClInclude Include="Framework\Animation.h" />
     <ClInclude Include="Framework\AudioManager.h" />
     <ClInclude Include="Framework\Collision.h" />
@@ -188,6 +187,7 @@
     <ClInclude Include="Framework\GameObject.h" />
     <ClInclude Include="Framework\SoundObject.h" />
     <ClInclude Include="Framework\Vector.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="HelperFunctions.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Lobby.h" />

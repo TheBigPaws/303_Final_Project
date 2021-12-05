@@ -1,5 +1,7 @@
 #pragma once
 #include "Framework/GameObject.h"
+#include <chrono>
+#include <ctime>
 
 //class containing helper functions
 class HelperFunctions
@@ -23,22 +25,25 @@ private:
 	sf::Font font_;
 	sf::Text text;
 	sf::RectangleShape Button, ButtonOutline;
-	sf::Color fillColour;
 	bool pressed = false;
 	bool hovered = false;
-	int midPosX, midPosY, sizeX, sizeY;
 public:
+	int midPosX, midPosY, sizeX, sizeY;
+	sf::Color fillColour_, outlineColour_;
 	//basic setters
-	void setText(std::string text_) {text.setString(text_);}
-	void setFillC(sf::Color color_) { fillColour = color_; Button.setFillColor(fillColour); }
+	void setText(std::string text_) { text.setString(text_); text.setFillColor(sf::Color(255-fillColour_.r, 255 - fillColour_.g, 255 - fillColour_.b,255)); }
+	void setColors(sf::Color fillColour, sf::Color outlineColour,bool reset = false);
+	void textResetPos(){text.setPosition(midPosX - text.getLocalBounds().width / 2, midPosY - text.getLocalBounds().height);}
 	
+	//basic getters
 	bool isPressed() { return pressed; }
-	void resetPos(){text.setPosition(midPosX - text.getLocalBounds().width / 2, midPosY - text.getLocalBounds().height);}
+	bool isHovered() { return hovered; }
 
 	//basic game loop oriented functions
-	void setup(int midPosX_, int midPosY_, int sizeX_, int sizeY_, sf::String string, sf::Color fillColour_ = sf::Color::White, sf::Color outlineColor = sf::Color::Black);
+	void setup(int midPosX_, int midPosY_, int sizeX_, int sizeY_, sf::String string, int fontSize, sf::Color fillColour = sf::Color::White, sf::Color outlineColour = sf::Color::Black);
 	void render(sf::RenderWindow* window_);
 	void update(Input* input_);
+
 };
 
 class TextField {
@@ -50,14 +55,34 @@ private:
 	bool keyPressed = false;
 public:
 	//basic get & set funcs
-	void setFillC(sf::Color color_) { textField.setFillC(color_); }
 	std::string getString() { return shown_string; }
+	bool isSelected() { return selected; }
 
 	//clears text field
 	void clearTextField(bool wasWrong);
 	
 	//basic game loop oriented functions
-	void setup(int midPosX_, int midPosY_, int sizeX_, int sizeY_, sf::String string, bool onlyInts = false, sf::Color fillColour = sf::Color::White, sf::Color outlineColor = sf::Color::Black);
+	void setup(int midPosX_, int midPosY_, int sizeX_, int sizeY_, int fontSize, bool onlyInts = false, sf::Color fillColour = sf::Color::White, sf::Color outlineColor = sf::Color::Black);
 	void render(sf::RenderWindow* window_);
 	void update(Input* input_);
+};
+
+class Chat {
+private:
+	sf::Font font_;
+	TextField textEntryField;
+	sf::RectangleShape chatBG;
+	std::vector<sf::Text> chatMessages;
+	int bottomChatMsgIndex = 0;
+public:
+	bool sentSomething = false;
+	std::string sent_string;
+
+	//basic game loop oriented functions
+	void setup(int midPosX_, int midPosY_, int sizeX_, int sizeY_);
+	void render(sf::RenderWindow* window_);
+	void update(Input* input_);
+
+	//chat specific functions
+	void addMessage(std::string message, sf::Color msgColor = sf::Color::White,std::string senderName = "Me");
 };

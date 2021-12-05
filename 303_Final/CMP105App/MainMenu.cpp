@@ -7,35 +7,41 @@ void MainMenu::setup(sf::RenderWindow* window_, Input* input_){
 	
 	arialF.loadFromFile("font/arial.ttf");
 
+	IPfield.setup(window->getSize().x / 2, window->getSize().y / 2 - 40, 300, 50, 25);
+	PortField.setup(window->getSize().x / 2, window->getSize().y / 2 + 40, 300, 50, 25, true);
+	NameField.setup(window->getSize().x / 2, window->getSize().y - 30, 500, 60, 26, false, sf::Color(217, 217, 247));
+
 	gameTitletxt = sf::Text("Tank Capture Game",arialF);
-	connectPromptIP = gameTitletxt;
 	gameTitletxt.setCharacterSize(30);
 	gameTitletxt.setStyle(sf::Text::Bold);
-	gameTitletxt.setOutlineThickness(5);
 	gameTitletxt.setPosition(window->getSize().x / 2 - gameTitletxt.getLocalBounds().width/2, 50);
-
-	connectPromptIP.setCharacterSize(25);
-	connectPromptIP.setStyle(sf::Text::Bold);
-	connectPromptIP.setStyle(sf::Text::Italic);
-	connectPromptIP.setFillColor(sf::Color::Black);
-	connectPromptPort = connectPromptIP;
-
-	connectPromptIP.setString("IP:");
-	connectPromptPort.setString("Port:");
-
-	connectPromptIP.setPosition(window->getSize().x / 2 - 150 - connectPromptIP.getLocalBounds().width, window->getSize().y / 2-40);
-	connectPromptPort.setPosition(window->getSize().x / 2 - 150 - connectPromptPort.getLocalBounds().width, window->getSize().y / 2+40);
-
-	IPfield.setup(window->getSize().x / 2, window->getSize().y / 2 - 40, 300, 50, "");
-	PortField.setup(window->getSize().x / 2, window->getSize().y / 2 + 40, 300, 50, "",true);
 
 	connectPrompt = sf::RectangleShape(sf::Vector2f(window->getSize().x / 2, window->getSize().y / 2));
 	connectPrompt.setPosition(window->getSize().x / 4, window->getSize().y / 4);
 	connectPrompt.setFillColor(sf::Color::White);
 
-	hostButton.setup(window->getSize().x / 2, window->getSize().y / 4, 200, 50, "Host");
-	connectButton.setup(window->getSize().x / 2, window->getSize().y / 4 + 100, 200, 50, "Connect");
-	connectCloseButton.setup(window->getSize().x / 4 * 3, window->getSize().y / 4, 40, 40, "X",sf::Color::Red);
+	connectPromptIP = gameTitletxt;
+	gameTitletxt.setOutlineThickness(5);
+
+	connectPromptIP.setCharacterSize(25);
+	connectPromptIP.setStyle(sf::Text::Italic);
+	connectPromptIP.setFillColor(sf::Color::Black);
+	connectPromptIP.setString("IP:");
+	connectPromptIP.setPosition(window->getSize().x / 2 - 150 - connectPromptIP.getLocalBounds().width, window->getSize().y / 2-40);
+
+
+	connectPromptPort = connectPromptIP;
+	connectPromptPort.setString("Port:");
+	connectPromptPort.setPosition(window->getSize().x / 2 - 150 - connectPromptPort.getLocalBounds().width, window->getSize().y / 2+40);
+
+	enterNameText = connectPromptPort;
+	enterNameText.setString("Enter Name:");
+	enterNameText.setPosition(window->getSize().x / 2 - enterNameText.getLocalBounds().width/2, window->getSize().y - 100);
+
+
+	hostButton.setup(window->getSize().x / 2, window->getSize().y / 4, 200, 50, "Host",30);
+	connectButton.setup(window->getSize().x / 2, window->getSize().y / 4 + 100, 200, 50, "Connect",30);
+	connectCloseButton.setup(window->getSize().x / 4 * 3, window->getSize().y / 4, 40, 40, "X",20,sf::Color::Red);
 
 }
 
@@ -51,6 +57,9 @@ void MainMenu::render() {
 		IPfield.render(window);
 		PortField.render(window);
 	}
+
+	window->draw(enterNameText);
+	NameField.render(window);
 }
 void MainMenu::update(float dt) {
 	updateTitleColours();
@@ -66,8 +75,8 @@ void MainMenu::update(float dt) {
 				attemptConnect = true;
 			}
 			else { //usered entered blanks
-				IPfield.setFillC(sf::Color::Red);
-				PortField.setFillC(sf::Color::Red);
+				IPfield.clearTextField(true);
+				PortField.clearTextField(true);
 			}
 		}
 
@@ -77,11 +86,22 @@ void MainMenu::update(float dt) {
 	}else{
 		hostButton.update(input);
 		connectButton.update(input);
+		NameField.update(input);
 		if (connectButton.isPressed()) {
-			showConnectPrompt = true;
+			if (NameField.getString() == "") {
+				NameField.clearTextField(true);
+				enterNameText.setString("Name can't be blank!");
+				enterNameText.setFillColor(sf::Color::Red);
+			}
+			else { showConnectPrompt = true; }
 		}
 		else if (hostButton.isPressed()) {
-			goToLobby = true;
+			if (NameField.getString() == "") {
+				NameField.clearTextField(true);
+				enterNameText.setString("Name can't be blank!");
+				enterNameText.setFillColor(sf::Color::Red);
+			}
+			else { goToLobby = true; }
 		}
 	}
 

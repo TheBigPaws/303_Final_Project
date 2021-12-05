@@ -7,6 +7,7 @@
 #include <chrono>
 
 struct header {
+	std::string senderName;
 	float game_elapsed_time;
 	sf::Uint16 information_type;
 	sf::Uint16 information_amount;
@@ -20,6 +21,7 @@ struct playerInformation {
 };
 
 struct peerNWinfo {
+	std::string name;
 	sf::Uint32 ipAddress;
 	sf::Uint16  listenerPort;
 };
@@ -41,7 +43,7 @@ struct Peer {
 	std::queue<sf::Packet> outgoingPackets;
 };
 
-enum Data_Header { ntn, PLAYER_POSITION, PLAYER_ANIMATION_STAGE, PARTICLE_POSITION, PARTICLE_ROTATION, TEST, IP_ADDRESS, LISTENER_PORT, NW_INFO, PING };
+enum Data_Header { ntn, CHAT_MESSAGE, NW_INFO, PING };
 
 class PacketBase
 {
@@ -62,21 +64,21 @@ public:
 
 static sf::Packet& operator <<(sf::Packet& packet, const peerNWinfo& peerInfo) // peer info packet ***
 {
-	return packet << peerInfo.ipAddress << peerInfo.listenerPort;
+	return packet << peerInfo.name << peerInfo.ipAddress << peerInfo.listenerPort;
 }
 
 static sf::Packet& operator >>(sf::Packet& packet, peerNWinfo& peerInfo)
 {
-	return packet >> peerInfo.ipAddress >> peerInfo.listenerPort;
+	return packet >> peerInfo.name >> peerInfo.ipAddress >> peerInfo.listenerPort;
 }
 
 
 static sf::Packet& operator <<(sf::Packet& packet, const header& header_) // peer info packet ***
 {
-	return packet << header_.game_elapsed_time << header_.information_type << header_.information_amount;
+	return packet << header_.senderName << header_.game_elapsed_time << header_.information_type << header_.information_amount;
 }
 
 static sf::Packet& operator >>(sf::Packet& packet, header& header_)
 {
-	return packet >> header_.game_elapsed_time >> header_.information_type >> header_.information_amount;
+	return packet >> header_.senderName >> header_.game_elapsed_time >> header_.information_type >> header_.information_amount;
 }
