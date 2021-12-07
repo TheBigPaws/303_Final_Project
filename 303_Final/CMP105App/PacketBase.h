@@ -43,7 +43,7 @@ struct Peer {
 	std::queue<sf::Packet> outgoingPackets;
 };
 
-enum Data_Header { ntn, CHAT_MESSAGE, NW_INFO, PING };
+enum Data_Header { ntn, CHAT_MESSAGE, NW_INFO, PLAYER_POS_ANGLE,BULLET_SHOT,AREA_CAPTURED };
 
 class PacketBase
 {

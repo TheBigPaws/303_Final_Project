@@ -23,11 +23,13 @@ public:
 
 	void decodePacket(sf::Packet packet);
 
+	void decodeImportantGameEvs();
 private:
 	// Default functions for rendering to the screen.
 	void beginDraw();
 	void endDraw();
 
+	float nwShareTimer = 0.1f;
 
 	MainMenu mainMenu;
 	Lobby lobby;
@@ -42,5 +44,5 @@ private:
 	Input* input;
 	AudioManager* audio;
 	
-	GameState gameState = GAME;
+	GameState gameState = MAIN_MENU;
 };

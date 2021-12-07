@@ -33,6 +33,10 @@ void Level::decodePacket(sf::Packet packet) {
 	sf::Uint32 int32holder;
 	char* charbbuffer = new char;
 	peerNWinfo info_;
+	playerPosAngle receivedPPA;
+
+	sf::Uint16 a, b;
+
 	//deal with header here
 
 	header header_;
@@ -51,6 +55,15 @@ void Level::decodePacket(sf::Packet packet) {
 				lobby.chat.addMessage(charbbuffer, sf::Color::White, header_.senderName);
 			}
 			//std::cout << charbbuffer << std::endl;
+			break;
+		case PLAYER_POS_ANGLE:
+			packet >> receivedPPA.position.x >> receivedPPA.position.y >> receivedPPA.rotateAngle;
+			game.updateEnemyVals(header_.senderName, receivedPPA);
+			std::cout << header_.senderName << "X position is " << receivedPPA.position.x << std::endl;
+			break;
+		case AREA_CAPTURED:
+			packet >> a >> b;
+			game.captureTile(a, b, header_.senderName);
 			break;
 		default:
 			break;
@@ -81,7 +94,7 @@ void Level::update(float dt)
 			if (mainMenu.attemptConnect) {//if player clicked enter on the connect screen
 				mainMenu.attemptConnect = false;
 				networkModule.setMyName(mainMenu.getEnteredName());
-
+				game.setMyName(mainMenu.getEnteredName());
 				if (networkModule.connect_TCP_to(sf::IpAddress(mainMenu.getEnteredIP()), (unsigned short)std::stoi(mainMenu.getEnteredPort()), true)) {
 					mainMenu.goToLobby = true;
 				}
@@ -91,6 +104,7 @@ void Level::update(float dt)
 				}
 			}
 			if (mainMenu.goToLobby) {
+				game.setMyName(mainMenu.getEnteredName());
 				networkModule.setMyName(mainMenu.getEnteredName());
 				lobby.addPeer(networkModule.getMyInfo()->name, networkModule.getMyInfo()->IpAddress.toString(), std::to_string(networkModule.getMyInfo()->TCP_listener_Port));
 				gameState = LOBBY;
@@ -119,15 +133,39 @@ void Level::update(float dt)
 				networkModule.sendAll_TCP();
 			}
 			lobby.update(dt);
+			if (lobby.startGame) {
+				for (int i = 0; i < networkModule.getPeerCount(); i++) {
+					game.addEnemy(networkModule.getPeer(i)->name);
+					gameState = GAME;
+				}
+			}
 		break;
 
 		case GAME:
 			game.update(dt);
+			
+			nwShareTimer -= dt;
+			//std::cout << nwShareTimer<< "   should send rn\n";
+
+			if (nwShareTimer <= 0.0f) {
+				nwShareTimer = 0.1f;
+				sf::Packet packet;
+				header hdr_;
+				hdr_.game_elapsed_time = 0.0f;
+				hdr_.information_amount = 1;
+				hdr_.information_type = PLAYER_POS_ANGLE;
+				hdr_.senderName = networkModule.getMyInfo()->name;
+				playerPosAngle myPA = game.getPlayerPosAngle();
+				packet << hdr_ << myPA.position.x << myPA.position.y << myPA.rotateAngle;
+				networkModule.pushOutPacket_all(packet);
+				networkModule.sendAll_TCP();
+			}
 		break;
 
 	}
+	decodeImportantGameEvs();
 	networkModule.receiveAll_TCP();
-	if (networkModule.anyPacketsToRead()) {
+	while (networkModule.anyPacketsToRead()) {
 		decodePacket(networkModule.getPacketToRead());
 	}
 }
@@ -165,4 +203,24 @@ void Level::beginDraw()
 void Level::endDraw()
 {
 	window->display();
+}
+
+void Level::decodeImportantGameEvs() {
+	while (game.areImportantEv()) {
+		eventInfo ev = game.getImportantEv();
+		sf::Packet packet;
+		header header_;
+		header_.game_elapsed_time = 0.0f;
+		header_.information_amount = 1;
+		header_.senderName = networkModule.getMyInfo()->name;
+		//header_.information_type = 
+		switch (ev.type) {
+			case AREA_CAPTURED_:
+				header_.information_type = AREA_CAPTURED;
+				packet << header_ << (sf::Uint16)ev.v1.x << (sf::Uint16)ev.v1.y;
+				networkModule.pushOutPacket_all(packet);
+			break;
+		}
+	}
+
 }

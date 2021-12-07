@@ -112,18 +112,17 @@ void Lobby::update(float dt) {
 	chat.update(input);
 	startNow.update(input);
 	startCountDown.update(input);
-
+	if (countDownTimer <= 0.0f) {
+		startGame = true;
+	}
 	if (displayedPeerNr() >= 1) {
 		if (startNow.isPressed()) {
 			countDownTimer = 0.0f;
-			startGame = true;
 		}
 		if (startCountDown.fillColour_ == sf::Color::Green) {
 			countDownTimer -= dt;
 
-			if (countDownTimer <= 0.0f) {
-				startGame = true;
-			}
+			
 
 			std::string timeWText = "Start in ";
 			timeWText += std::to_string(countDownTimer);

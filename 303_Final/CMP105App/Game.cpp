@@ -1,20 +1,22 @@
 #include "Game.h"
 
-void Game::updateEnemyVals(std::string name, float posX, float posY, float rotateAngle) {
+void Game::updateEnemyVals(std::string name, playerPosAngle playerVals){
 	for (int i = 0; i < enemies.size(); i++) {
 		if (enemies.at(i).name == name) {
-			enemies.at(i).receivedPos[0] = posX;
-			enemies.at(i).receivedPos[1] = posY;
-			enemies.at(i).rotateAngle = rotateAngle;
+			enemies.at(i).currentPos.x = playerVals.position.x;
+			enemies.at(i).currentPos.y = playerVals.position.y;
+			enemies.at(i).rotateAngle = playerVals.rotateAngle;
+			enemies.at(i).updatePositions();
 			break;
 		}
 	}
 }
-void Game::addEnemy(std::string name, float posX, float posY) {
+void Game::addEnemy(std::string name) {
 	Player protot;
 	protot.name = name;
-	protot.currentPos[0] = posX;
-	protot.currentPos[1] = posY;
+	protot.currentPos.x = 0;
+	protot.currentPos.y = 0;
+	protot.setup(window, input);
 	enemies.push_back(protot);
 }
 
@@ -29,36 +31,68 @@ void Game::setup(sf::RenderWindow* window_, Input* input_) {
 
 	int tileSize = 100;
 
-	gameBackGround.push_back(constructRectangle(0, 0, 20 * tileSize, 20 * tileSize, sf::Color(200, 200, 200, 255)));
+	for (int x = -10; x < 10; x++) {
+		for (int y = -10; y < 10; y++) {
+			sf::RectangleShape protot = sf::RectangleShape(sf::Vector2f(tileSize, tileSize));
+			protot.setFillColor(sf::Color(200, 200, 200, 255));
+			protot.setPosition(x * tileSize, y * tileSize);
+			gameField[y + 10][x + 10] = protot;
+		}
+	}
+
 
 	for (int x = -10; x <= 10; x++) {
-		gameBackGround.push_back(constructRectangle(x * tileSize, 0, 2, 20 * tileSize, sf::Color::Black));
+		gameShapes.push_back(constructRectangle(x * tileSize, 0, 2, 20 * tileSize, sf::Color::Black));
 
 	}
 	for (int y = -10; y <= 10; y++) {
-		gameBackGround.push_back(constructRectangle(0, y * tileSize, 20 * tileSize, 2, sf::Color::Black));
+		gameShapes.push_back(constructRectangle(0, y * tileSize, 20 * tileSize, 2, sf::Color::Black));
 	}
 
 	arialF.loadFromFile("font/arial.ttf");
 
 	gameTexts.push_back(sf::Text("ajo", arialF));
 	gameTexts.back().setPosition(0, 0);
-	player.currentPos[0] = 0.0f;
-	player.currentPos[1] = 0.0f;
+	player.currentPos.x = -999.5f + rand() % 2000;
+	player.currentPos.y = -999.5f + rand() % 2000;
+
+	enemyBullets.push_back(Bullet(sf::Vector2f(100, 100), sf::Vector2f(0, 0)));
 
 }
 
 void Game::render() {
-	for (int i = 0; i < gameBackGround.size(); i++) {
-		window->draw(gameBackGround.at(i));
+
+	for (int x = 0; x < 20; x++) {
+		for (int y = 0; y < 20; y++) {
+			window->draw(gameField[x][y]);
+		}
 	}
-	for (int i = 0; i < gameTexts.size(); i++) {
+	for (int i = 0; i < gameShapes.size(); i++) {
+		window->draw(gameShapes.at(i));
+	}
+	for (int i = 1; i < gameTexts.size(); i++) {
 		window->draw(gameTexts.at(i));
 	}
 	for (int i = 0; i < enemies.size(); i++) {
 		enemies.at(i).render();
 	}
+
+	for (int i = 0; i < myBullets.size(); i++) {
+		window->draw(myBullets.at(i).bullet);
+	}
+
+	for (int i = 0; i < enemyBullets.size(); i++) {
+		window->draw(enemyBullets.at(i).bullet);
+	}
+
 	player.render();
+	if (playerIsCapturing) {
+		gameTexts.at(0).setString(std::to_string(playerCaptureTime));
+		gameTexts.at(0).setPosition(player.currentPos.x, player.currentPos.y);
+		window->draw(gameTexts.at(0));
+	}
+
+	
 }
 
 
@@ -66,68 +100,112 @@ void Game::update(float dt) {
 	
 	handleGameInput(dt);
 	player.update(dt);
-	gameTexts.at(0).setString(std::to_string(player.rotateAngle));
 
-	view.setCenter(player.currentPos[0],player.currentPos[1]);
+	view.setCenter(player.currentPos.x,player.currentPos.y);
 	window->setView(view);
+
+	for (int i = 0; i < myBullets.size(); i++) {
+		myBullets.at(i).update(dt);
+	}
+	handleBullets();
 }
 
 void Game::handleGameInput(float dt) {
-	if (input->isKeyDown(sf::Keyboard::D)) {
-		player.currentPos[0] += dt * player.playerSpeed;
-		if (player.currentPos[0] > 1000) {
-			player.currentPos[0] = 1000;
+	if (input->isMouseLDown()) { //shoot anytime
+		input->setMouseLDown(false);
+		myBullets.push_back(Bullet(player.currentPos, player.lookVector));
+
+		eventInfo shotInfo;
+		shotInfo.type = BULLET_SHOT_;
+		shotInfo.v1 = player.currentPos;
+		shotInfo.v2 = player.lookVector;
+		shotInfo.a = myBullets.back().id;
+		importantEvents.push(shotInfo);
+	}
+	if (!playerIsCapturing) { //only move when not capturing
+		if (input->isKeyDown(sf::Keyboard::D)) { //move left
+			player.currentPos.x += dt * player.playerSpeed;
+			if (player.currentPos.x > 999) {
+				player.currentPos.x = 999;
+			}
+		}
+		if (input->isKeyDown(sf::Keyboard::A)) {//move right
+			player.currentPos.x -= dt * player.playerSpeed;
+			if (player.currentPos.x < -999) {
+				player.currentPos.x = -999;
+			}
+		}
+		if (input->isKeyDown(sf::Keyboard::W)) {//move up
+			player.currentPos.y -= dt * player.playerSpeed;
+			if (player.currentPos.y < -999) {
+				player.currentPos.y = -999;
+			}
+		}
+		if (input->isKeyDown(sf::Keyboard::S)) {//move down
+			player.currentPos.y += dt * player.playerSpeed;
+			if (player.currentPos.y > 999) {
+				player.currentPos.y = 999;
+			}
+		}
+
+	}
+	else {
+		playerCaptureTime -= dt;
+		if (playerCaptureTime <= 0) {
+			int idxOfTileOn[2];
+			idxOfTileOn[0] = player.currentPos.x / 100 + 10;
+			idxOfTileOn[1] = player.currentPos.y / 100 + 10;
+
+			gameField[idxOfTileOn[1]][idxOfTileOn[0]].setFillColor(player.playerColour);
+			playerIsCapturing = false;
+
+			eventInfo captureInfo;
+			captureInfo.type = AREA_CAPTURED_;
+			captureInfo.v1 = sf::Vector2f(idxOfTileOn[0],idxOfTileOn[1]);
+			importantEvents.push(captureInfo);
 		}
 	}
-	if (input->isKeyDown(sf::Keyboard::A)) {
-		player.currentPos[0] -= dt * player.playerSpeed;
-		if (player.currentPos[0] < -1000) {
-			player.currentPos[0] = -1000;
-		}
-	}
-	if (input->isKeyDown(sf::Keyboard::W)) {
-		player.currentPos[1] -= dt * player.playerSpeed;
-		if (player.currentPos[1] < -1000) {
-			player.currentPos[1] = -1000;
-		}
-	}
-	if (input->isKeyDown(sf::Keyboard::S)) {
-		player.currentPos[1] += dt * player.playerSpeed;
-		if (player.currentPos[1] > 1000) {
-			player.currentPos[1] = 1000;
-		}
-	}
-
-}
-
-void Player::setup(sf::RenderWindow* window_, Input* input_) {
-	input = input_;
-	window = window_;
-
-	body = sf::CircleShape(30);
-	body.setFillColor(sf::Color::Blue);
-	body.setOutlineThickness(5);
-	body.setOutlineColor(sf::Color::White);
-
-	cannon = sf::RectangleShape(sf::Vector2f(80, 20));
-	cannon.setFillColor(sf::Color::Black);
-	cannon.setOutlineThickness(3);
-	cannon.setOutlineColor(sf::Color::White);
-}
-
-void Player::update(float dt) {
-
-	body.setPosition(currentPos[0] - body.getRadius(), currentPos[1] - body.getRadius());
-	cannon.setPosition(currentPos[0], currentPos[1] - cannon.getSize().y / 2);
-
-	sf::Vector2f playerToCursor = sf::Vector2f(input->getMouseX() - (int)window->getSize().x/2, input->getMouseY() - (int)window->getSize().y / 2);
 	
-	float magnitude = sqrt(playerToCursor.x * playerToCursor.x + playerToCursor.y * playerToCursor.y);
-	rotateAngle = acos(playerToCursor.x / magnitude) * 57.32;
+	if (input->isKeyDown(sf::Keyboard::Space)) { //capture
+		input->setKeyUp(sf::Keyboard::Space);
 
-	if (playerToCursor.y < 0) {
-		rotateAngle *= -1;
+		playerCaptureTime = 3.0f;
+		playerIsCapturing = !playerIsCapturing;
 	}
+	if (input->isKeyDown(sf::Keyboard::F)) {
+		input->setKeyUp(sf::Keyboard::F);
+		//playerDie
+	}
+}
 
 
+
+void Game::handleBullets() {
+	for (int i = 0; i < enemyBullets.size(); i++) {
+		sf::Vector2f playerToBullet = enemyBullets.at(i).position - player.currentPos;
+		if (abs(playerToBullet.x) < player.body.getRadius() && abs(playerToBullet.y) < player.body.getRadius()) {
+			enemyBullets.erase(enemyBullets.begin() + i);
+			player.health -= 1.0f;
+			break;
+		}
+
+		//also can deal with bullets flying out of arena
+		if (enemyBullets.at(i).position.x < -1000 || enemyBullets.at(i).position.y < -1000 || enemyBullets.at(i).position.x > 1000 || enemyBullets.at(i).position.y > 1000) {
+			enemyBullets.erase(enemyBullets.begin() + i);
+		}
+	}
+	for (int i = 0; i < myBullets.size(); i++) {
+		if (myBullets.at(i).position.x < -1000 || myBullets.at(i).position.y < -1000 || myBullets.at(i).position.x > 1000 || myBullets.at(i).position.y > 1000) {
+			myBullets.erase(myBullets.begin() + i);
+		}
+	}
+}
+
+void Game::captureTile(int x, int y, std::string capturer_name) {
+	for (int i = 0; i < enemies.size(); i++) {
+		if (enemies.at(i).name == capturer_name) {
+			gameField[y][x].setFillColor(enemies.at(i).playerColour);
+			return;
+		}
+	}
 }

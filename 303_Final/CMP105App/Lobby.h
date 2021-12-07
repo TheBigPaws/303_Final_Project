@@ -52,7 +52,7 @@ private:
 	std::vector<sf::Text> texts;
 	sf::Text gameTimer;
 	Button startCountDown, startNow;
-	float countDownTimer = 30.0f;
+	float countDownTimer = 10.0f;
 	bool buttonPressed = false;
 public:
 	Chat chat;
