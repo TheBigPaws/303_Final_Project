@@ -28,48 +28,7 @@ Level::~Level()
 
 }
 
-void Level::decodePacket(sf::Packet packet) {
 
-	sf::Uint32 int32holder;
-	char* charbbuffer = new char;
-	peerNWinfo info_;
-	playerPosAngle receivedPPA;
-
-	sf::Uint16 a, b;
-
-	//deal with header here
-
-	header header_;
-	packet >> header_;
-	for (int i = 0; i < header_.information_amount; i++) {
-		switch (header_.information_type) {
-		case NW_INFO:
-			packet >> info_;
-			if (networkModule.connect_TCP_to(sf::IpAddress(info_.ipAddress), (unsigned short)info_.listenerPort, 0)) {
-
-			}
-			break;
-		case CHAT_MESSAGE:
-			packet >> charbbuffer;
-			if (gameState == LOBBY) {
-				lobby.chat.addMessage(charbbuffer, sf::Color::White, header_.senderName);
-			}
-			//std::cout << charbbuffer << std::endl;
-			break;
-		case PLAYER_POS_ANGLE:
-			packet >> receivedPPA.position.x >> receivedPPA.position.y >> receivedPPA.rotateAngle;
-			game.updateEnemyVals(header_.senderName, receivedPPA);
-			std::cout << header_.senderName << "X position is " << receivedPPA.position.x << std::endl;
-			break;
-		case AREA_CAPTURED:
-			packet >> a >> b;
-			game.captureTile(a, b, header_.senderName);
-			break;
-		default:
-			break;
-		}
-	}
-}
 
 // handle user input
 void Level::handleInput(float dt)
@@ -94,8 +53,8 @@ void Level::update(float dt)
 			if (mainMenu.attemptConnect) {//if player clicked enter on the connect screen
 				mainMenu.attemptConnect = false;
 				networkModule.setMyName(mainMenu.getEnteredName());
-				game.setMyName(mainMenu.getEnteredName());
-				if (networkModule.connect_TCP_to(sf::IpAddress(mainMenu.getEnteredIP()), (unsigned short)std::stoi(mainMenu.getEnteredPort()), true)) {
+				game.setMyName(mainMenu.getEnteredName());//commented under is just ip address enter disabled
+				if (networkModule.connect_TCP_to(/*sf::IpAddress(mainMenu.getEnteredIP()*/sf::IpAddress::getLocalAddress(), (unsigned short)std::stoi(mainMenu.getEnteredPort()), true)) {
 					mainMenu.goToLobby = true;
 				}
 				else {
@@ -220,7 +179,88 @@ void Level::decodeImportantGameEvs() {
 				packet << header_ << (sf::Uint16)ev.v1.x << (sf::Uint16)ev.v1.y;
 				networkModule.pushOutPacket_all(packet);
 			break;
+
+			case BULLET_SHOT_:
+				header_.information_type = BULLET_SHOT;
+				packet << header_; 
+				packet << (sf::Uint16)ev.a;//id
+				packet << ev.v1.x << ev.v1.y; //spawn pos
+				packet << ev.v2.x << ev.v2.y; //direction
+				std::cout << "In Level, i (" << networkModule.getMyInfo()->name << ") sent the bullet's id as int " << ev.a << " which is in uint16 " << (sf::Uint16)ev.a << std::endl;
+				networkModule.pushOutPacket_all(packet);
+			break;
+
+			case PLAYER_HIT_:
+				header_.information_type = PLAYER_HIT;
+				packet << header_;
+				packet << (sf::Uint16)ev.a;//bullet id
+				packet << ev.str; //hit player name
+				networkModule.pushOutPacket_all(packet);
+			break;
 		}
 	}
 
+}
+
+void Level::decodePacket(sf::Packet packet) {
+
+	sf::Uint32 int32holder;
+	char* charbbuffer = new char;
+	peerNWinfo info_;
+	playerPosAngle receivedPPA;
+	sf::Vector2f vector1, vector2;
+	sf::Uint16 a, b;
+
+	//deal with header here
+
+	header header_;
+	packet >> header_;
+	for (int i = 0; i < header_.information_amount; i++) {
+		switch (header_.information_type) {
+
+		case NW_INFO:
+			packet >> info_;
+			if (networkModule.connect_TCP_to(sf::IpAddress(info_.ipAddress), (unsigned short)info_.listenerPort, 0)) {
+
+			}
+		break;
+
+		case CHAT_MESSAGE:
+			packet >> charbbuffer;
+			if (gameState == LOBBY) {
+				lobby.chat.addMessage(charbbuffer, sf::Color::White, header_.senderName);
+			}
+			//std::cout << charbbuffer << std::endl;
+		break;
+
+		case PLAYER_POS_ANGLE:
+			packet >> receivedPPA.position.x >> receivedPPA.position.y >> receivedPPA.rotateAngle;
+			game.updateEnemyVals(header_.senderName, receivedPPA);
+		break;
+
+		case AREA_CAPTURED:
+			packet >> a >> b;
+			game.captureTile(a, b, header_.senderName);
+		break;
+
+		case BULLET_SHOT:
+			packet >> a;
+			packet >> vector1.x >> vector1.y; //spawn pos
+			packet >> vector2.x >> vector2.y; //direction
+
+			std::cout << networkModule.getMyInfo()->name << "just shot IN GAME a bullet with id as int "<< a << " as uint16 ";
+
+			game.addEnemyBullet(Bullet(vector1, vector2, a));
+		break;
+
+		case PLAYER_HIT:
+			packet >> a;//bullet id
+			packet >> charbbuffer; //hit player name
+			game.enemyGotHit(charbbuffer, a);
+		break;
+
+		default:
+		break;
+		}
+	}
 }

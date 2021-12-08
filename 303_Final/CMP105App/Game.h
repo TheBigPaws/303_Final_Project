@@ -2,13 +2,16 @@
 #include "Player.h"
 #include "Bullet.h"
 #include <queue>
+#include <iostream>
 struct playerPosAngle {
 	float rotateAngle;
 	sf::Vector2f position;
 };
-enum eventType { AREA_CAPTURED_, BULLET_SHOT_ };
+enum eventType { AREA_CAPTURED_, BULLET_SHOT_,PLAYER_HIT_ };
 struct eventInfo {
+	std::string str;
 	int type;
+	float f1;
 	sf::Vector2f v1;
 	sf::Vector2f v2;
 	int a;
@@ -17,9 +20,6 @@ struct eventInfo {
 class Game
 {
 private:
-
-	bool playerIsCapturing = false;
-	float playerCaptureTime = 3.0f;
 
 	bool playerDead = false;
 	float playerDeadTime = 10.0f;
@@ -49,12 +49,13 @@ public:
 	void update(float dt);
 
 	void handleGameInput(float dt);
-	void handleBullets();
+	void updateBullets(float dt);
 
 	void updateEnemyVals(std::string name, playerPosAngle playerVals);
 	void addEnemy(std::string name);
 	void addEnemyBullet(Bullet bullet) {
 		enemyBullets.push_back(bullet);
+		std::cout << "an enemy bullet with id " << enemyBullets.back().id << " was just shot.\n";
 	}
 	playerPosAngle getPlayerPosAngle(){
 		playerPosAngle ret;
@@ -75,4 +76,6 @@ public:
 	}
 
 	void captureTile(int x, int y, std::string capturer_name);
+
+	void enemyGotHit(std::string hit_player, int bullet_id);
 };

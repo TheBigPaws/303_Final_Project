@@ -20,11 +20,11 @@ void Lobby::setup(sf::RenderWindow* window_, Input* input_) {
 
 void Lobby::addPeer(std::string name, std::string IP_, std::string listPort) {
 
-	//for (int i = 0; i < peersInLob.size(); i++) {
-	//	if (peersInLob.at(i).Name.getString() == name) {
-	//		return;//if added peer is already there
-	//	}
-	//}
+	for (int i = 0; i < peersInLob.size(); i++) {
+		if (peersInLob.at(i).Name.getString() == name) {
+			return;//if added peer is already there
+		}
+	}
 
 
 

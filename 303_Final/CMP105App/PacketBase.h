@@ -6,6 +6,8 @@
 #include <queue>
 #include <chrono>
 
+enum Data_Header { ntn, CHAT_MESSAGE, NW_INFO, PLAYER_POS_ANGLE, BULLET_SHOT, AREA_CAPTURED, PLAYER_HIT };
+
 struct header {
 	std::string senderName;
 	float game_elapsed_time;
@@ -43,7 +45,6 @@ struct Peer {
 	std::queue<sf::Packet> outgoingPackets;
 };
 
-enum Data_Header { ntn, CHAT_MESSAGE, NW_INFO, PLAYER_POS_ANGLE,BULLET_SHOT,AREA_CAPTURED };
 
 class PacketBase
 {

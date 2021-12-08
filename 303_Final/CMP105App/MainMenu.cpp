@@ -88,7 +88,7 @@ void MainMenu::update(float dt) {
 		connectButton.update(input);
 		NameField.update(input);
 		if (connectButton.isPressed()) {
-			if (NameField.getString() == "") {
+			if (NameField.getString() == "ajajajaj") {
 				NameField.clearTextField(true);
 				enterNameText.setString("Name can't be blank!");
 				enterNameText.setFillColor(sf::Color::Red);

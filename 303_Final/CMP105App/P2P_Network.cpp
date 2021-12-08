@@ -135,7 +135,7 @@ void P2P_Network::receiveAll_TCP() {
 			//std::cout << "error in receive from client" << i + 1 << std::endl;
 		}
 		else {
-			std::cout << "     RECEIVED sucessfully (as TCP) from client " << i+1 << std::endl;
+			//std::cout << "     RECEIVED sucessfully (as TCP) from client " << i+1 << std::endl;
 
 			peers.at(i)->receivedPackets.push(tempPacket);
 
@@ -157,7 +157,7 @@ void P2P_Network::sendAll_TCP() {
 					std::cout << "error in send to client" << i + 1 << std::endl;
 				}
 				else {
-					std::cout << "SENT (as TCP) to client " << i + 1 << " succesfully" << std::endl;
+					//std::cout << "SENT (as TCP) to client " << i + 1 << " succesfully" << std::endl;
 					peers.at(i)->outgoingPackets.pop();
 				}
 			}

@@ -12,19 +12,18 @@ void Game::updateEnemyVals(std::string name, playerPosAngle playerVals){
 	}
 }
 void Game::addEnemy(std::string name) {
-	Player protot;
+	Player protot = Player(window);
 	protot.name = name;
+	protot.name_t.setString(name);
 	protot.currentPos.x = 0;
 	protot.currentPos.y = 0;
-	protot.setup(window, input);
 	enemies.push_back(protot);
 }
 
 void Game::setup(sf::RenderWindow* window_, Input* input_) {
 	window = window_; input = input_;
-
-	player.setup(window, input);
-
+	player = Player(window);
+	player.setupInput(input);
 	//set up gameWorld
 
 	view.reset(sf::FloatRect(0, 0, window->getSize().x, window->getSize().y));
@@ -86,8 +85,8 @@ void Game::render() {
 	}
 
 	player.render();
-	if (playerIsCapturing) {
-		gameTexts.at(0).setString(std::to_string(playerCaptureTime));
+	if (player.isCapturing) {
+		gameTexts.at(0).setString(std::to_string(player.captureTime));
 		gameTexts.at(0).setPosition(player.currentPos.x, player.currentPos.y);
 		window->draw(gameTexts.at(0));
 	}
@@ -99,30 +98,31 @@ void Game::render() {
 void Game::update(float dt) {
 	
 	handleGameInput(dt);
-	player.update(dt);
 
+	player.handleInput(dt);
+	player.update(dt);
 	view.setCenter(player.currentPos.x,player.currentPos.y);
 	window->setView(view);
-
-	for (int i = 0; i < myBullets.size(); i++) {
-		myBullets.at(i).update(dt);
+	
+	for (int i = 0; i < enemies.size();i++) {
+		enemies.at(i).update(dt);
 	}
-	handleBullets();
+	updateBullets(dt);
 }
 
 void Game::handleGameInput(float dt) {
 	if (input->isMouseLDown()) { //shoot anytime
 		input->setMouseLDown(false);
 		myBullets.push_back(Bullet(player.currentPos, player.lookVector));
-
+		std::cout << "In game, i (" << player.name << ") shot a bullet with id " << myBullets.back().id << std::endl;
 		eventInfo shotInfo;
 		shotInfo.type = BULLET_SHOT_;
 		shotInfo.v1 = player.currentPos;
 		shotInfo.v2 = player.lookVector;
-		shotInfo.a = myBullets.back().id;
+		shotInfo.a = (int)myBullets.back().id;
 		importantEvents.push(shotInfo);
 	}
-	if (!playerIsCapturing) { //only move when not capturing
+	if (!player.isCapturing) { //only move when not capturing
 		if (input->isKeyDown(sf::Keyboard::D)) { //move left
 			player.currentPos.x += dt * player.playerSpeed;
 			if (player.currentPos.x > 999) {
@@ -150,14 +150,13 @@ void Game::handleGameInput(float dt) {
 
 	}
 	else {
-		playerCaptureTime -= dt;
-		if (playerCaptureTime <= 0) {
+		if (player.captureTime <= 0) {
 			int idxOfTileOn[2];
 			idxOfTileOn[0] = player.currentPos.x / 100 + 10;
 			idxOfTileOn[1] = player.currentPos.y / 100 + 10;
 
 			gameField[idxOfTileOn[1]][idxOfTileOn[0]].setFillColor(player.playerColour);
-			playerIsCapturing = false;
+			player.isCapturing = false;
 
 			eventInfo captureInfo;
 			captureInfo.type = AREA_CAPTURED_;
@@ -166,12 +165,7 @@ void Game::handleGameInput(float dt) {
 		}
 	}
 	
-	if (input->isKeyDown(sf::Keyboard::Space)) { //capture
-		input->setKeyUp(sf::Keyboard::Space);
 
-		playerCaptureTime = 3.0f;
-		playerIsCapturing = !playerIsCapturing;
-	}
 	if (input->isKeyDown(sf::Keyboard::F)) {
 		input->setKeyUp(sf::Keyboard::F);
 		//playerDie
@@ -180,12 +174,25 @@ void Game::handleGameInput(float dt) {
 
 
 
-void Game::handleBullets() {
+void Game::updateBullets(float dt) {
 	for (int i = 0; i < enemyBullets.size(); i++) {
+		enemyBullets.at(i).update(dt);
+
 		sf::Vector2f playerToBullet = enemyBullets.at(i).position - player.currentPos;
-		if (abs(playerToBullet.x) < player.body.getRadius() && abs(playerToBullet.y) < player.body.getRadius()) {
-			enemyBullets.erase(enemyBullets.begin() + i);
+		if (abs(playerToBullet.x) < player.body.getRadius() && abs(playerToBullet.y) < player.body.getRadius()) { //player was hit
 			player.health -= 1.0f;
+
+			//create a game event information about bullet hitting
+			eventInfo playerHitInfo;
+			playerHitInfo.type = PLAYER_HIT_;
+			playerHitInfo.a = enemyBullets.at(i).id;
+			playerHitInfo.str = player.name;
+
+			std::cout << playerHitInfo.str << " was hit by bullet with id " << playerHitInfo.a;
+
+			//send info about the event and delete the bullet
+			importantEvents.push(playerHitInfo);
+			enemyBullets.erase(enemyBullets.begin() + i);
 			break;
 		}
 
@@ -195,6 +202,8 @@ void Game::handleBullets() {
 		}
 	}
 	for (int i = 0; i < myBullets.size(); i++) {
+		myBullets.at(i).update(dt);
+		//deal with bullets flying out of arena
 		if (myBullets.at(i).position.x < -1000 || myBullets.at(i).position.y < -1000 || myBullets.at(i).position.x > 1000 || myBullets.at(i).position.y > 1000) {
 			myBullets.erase(myBullets.begin() + i);
 		}
@@ -207,5 +216,31 @@ void Game::captureTile(int x, int y, std::string capturer_name) {
 			gameField[y][x].setFillColor(enemies.at(i).playerColour);
 			return;
 		}
+	}
+}
+
+void Game::enemyGotHit(std::string hit_player, int bullet_id) {
+	for (int i = 0; i < enemies.size(); i++) {
+		if (enemies.at(i).name == hit_player) {
+			enemies.at(i).health -= 1.0f;
+			break;
+		}
+		//death here
+	}
+
+	//have to iterate through both my and enemy bullets, as it could be either of those
+	for (int i = 0; i < enemyBullets.size(); i++) {
+		if (enemyBullets.at(i).id == bullet_id) {
+			enemyBullets.erase(enemyBullets.begin() + i);
+			break;
+		}
+	}
+
+	for (int i = 0; i < myBullets.size(); i++) {
+		if (myBullets.at(i).id == bullet_id) {
+			myBullets.erase(myBullets.begin() + i);
+			break;
+		}
+		//death here
 	}
 }
