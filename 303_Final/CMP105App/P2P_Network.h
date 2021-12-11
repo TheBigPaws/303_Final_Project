@@ -6,7 +6,7 @@ private:
 
 	Peer myInfo;
 
-	std::string myName = "Ajo";
+	std::string myName = "";
 
 	//  Sockets
 	std::vector<Peer*> peers = {new Peer};
@@ -14,6 +14,8 @@ private:
 	sf::TcpListener mylistener;
 
 	bool isSetup = false;
+
+	
 
 public:
 	////setup functions
@@ -40,6 +42,7 @@ public:
 	Peer* getPeer(int at) { return peers.at(at); }
 	Peer* getMyInfo() { return &myInfo; }
 	void setMyName(std::string name) { myInfo.name = name; }
-
+	bool someoneDisconnected = false;
+	std::string disconnectedName = "";
 };
 

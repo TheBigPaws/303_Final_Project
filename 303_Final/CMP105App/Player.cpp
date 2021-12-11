@@ -46,7 +46,6 @@ void Player::update(float dt) {
 	if (isCapturing) {
 		captureTime -= dt;
 	}
-	//right now just health calculations here
 	if (health < 5) {
 		health += dt / 2;
 		healthNow.setSize(sf::Vector2f(health * 10.0f, 10));
@@ -55,20 +54,24 @@ void Player::update(float dt) {
 		health = 5.0f;
 	}
 
+	float rotateAngle = acos(currentLookVector.x) * 57.32;
+
+	if (currentLookVector.y < 0) {
+		rotateAngle *= -1;
+	}
+	//rotate the cannon
+	cannon.setRotation(rotateAngle);
+
 }
 
 void Player::handleInput(float dt) {
+	
 	sf::Vector2f playerToCursor = sf::Vector2f(input->getMouseX() - (int)window->getSize().x / 2, input->getMouseY() - (int)window->getSize().y / 2);
 
 	float magnitude = sqrt(playerToCursor.x * playerToCursor.x + playerToCursor.y * playerToCursor.y);
-	rotateAngle = acos(playerToCursor.x / magnitude) * 57.32;
-
-	if (playerToCursor.y < 0) {
-		rotateAngle *= -1;
-	}
 
 	//normalised look vector
-	lookVector = playerToCursor / magnitude;
+	currentLookVector = playerToCursor / magnitude;
 
 	updatePositions();
 
@@ -78,5 +81,63 @@ void Player::handleInput(float dt) {
 		captureTime = 3.0f;
 		isCapturing = !isCapturing;
 	}
+
+}
+
+void Player::interpolate(float dt) {
+	//if (abs(currentLookVector.x - receivedLookVector.x) > 0.05) {
+	//	if (currentLookVector.x < receivedLookVector.x) {
+	//		currentLookVector.x += dt * 2;
+	//	}
+	//	else {
+	//		currentLookVector.x -= dt * 2;
+	//	}
+	//
+	//}
+	//
+	//if (abs(currentLookVector.y - receivedLookVector.y) > 0.05) {
+	//	if (currentLookVector.y < receivedLookVector.y) {
+	//		currentLookVector.y += dt * 2;
+	//	}
+	//	else {
+	//		currentLookVector.y -= dt * 2;
+	//	}
+	//}
+	
+	//if (!arrivedAtRecPos) {
+	//
+		
+	//	if (dist_magnitude < 0.2f) {
+	//		body.setFillColor(sf::Color::Red);		//arrived
+	//		arrivedAtRecPos = true;
+	//		playerSpeed = 300.0f;
+	//	}
+	//
+	//}
+	//else {
+	//
+	//}
+
+	
+
+	sf::Vector2f dir = receivedPos - currentPos;
+	float dir_magnitude = sqrt(dir.x * dir.x + dir.y * dir.y);
+	//dir = dir / di
+
+	if (receivedPos == receivedPos2) {//if arrived to standing in place
+		predictedDirection = sf::Vector2f(0, 0);
+		if (dir_magnitude > 0.4f) {
+			currentPos += dir * dt;
+		}
+		else {
+			currentPos = receivedPos;
+
+		}
+	}
+	else {
+		currentPos += predictedDirection * playerSpeed * dt;
+	}
+
+	updatePositions();
 
 }

@@ -147,6 +147,7 @@ void P2P_Network::sendAll_TCP() {
 	if (peers.size() <= 1) { return; } //one is bad cause it's the empty peer
 	bool keep_sending = true;
 
+
 	while (keep_sending) {
 		keep_sending = false;//while stopper
 		for (int i = 0; i < peers.size() - 1; i++) { //-1 to compensate for the last vector slot being a blank
@@ -155,6 +156,10 @@ void P2P_Network::sendAll_TCP() {
 				if (peers.at(i)->socket.send(peers.at(i)->outgoingPackets.front()) != sf::Socket::Done)
 				{
 					std::cout << "error in send to client" << i + 1 << std::endl;
+					someoneDisconnected = true;
+					disconnectedName = peers.at(i)->name;
+					peers.erase(peers.begin() + i);
+					break;
 				}
 				else {
 					//std::cout << "SENT (as TCP) to client " << i + 1 << " succesfully" << std::endl;

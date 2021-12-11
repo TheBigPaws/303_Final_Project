@@ -38,10 +38,7 @@ void Level::handleInput(float dt)
 	}
 
 
-	if (input->isKeyDown(sf::Keyboard::P)) {
-		input->setKeyUp(sf::Keyboard::P);
-		lobby.addPeer(networkModule.getMyInfo()->name, networkModule.getMyInfo()->IpAddress.toString(), std::to_string(networkModule.getMyInfo()->TCP_listener_Port));
-	}
+
 }
 
 // Update game objects
@@ -101,10 +98,15 @@ void Level::update(float dt)
 		break;
 
 		case GAME:
-			game.update(dt);
 			
 			nwShareTimer -= dt;
-			//std::cout << nwShareTimer<< "   should send rn\n";
+			
+			if (networkModule.someoneDisconnected) {
+				networkModule.someoneDisconnected = false;
+				game.disconnectPlayer(networkModule.disconnectedName);
+			}
+
+			game.update(dt);
 
 			if (nwShareTimer <= 0.0f) {
 				nwShareTimer = 0.1f;
@@ -114,8 +116,8 @@ void Level::update(float dt)
 				hdr_.information_amount = 1;
 				hdr_.information_type = PLAYER_POS_ANGLE;
 				hdr_.senderName = networkModule.getMyInfo()->name;
-				playerPosAngle myPA = game.getPlayerPosAngle();
-				packet << hdr_ << myPA.position.x << myPA.position.y << myPA.rotateAngle;
+				playerPosLookDir myPLD = game.getplayerPosLookDir();
+				packet << hdr_ << myPLD.position.x << myPLD.position.y << myPLD.lookDir.x << myPLD.lookDir.y;
 				networkModule.pushOutPacket_all(packet);
 				networkModule.sendAll_TCP();
 			}
@@ -207,7 +209,7 @@ void Level::decodePacket(sf::Packet packet) {
 	sf::Uint32 int32holder;
 	char* charbbuffer = new char;
 	peerNWinfo info_;
-	playerPosAngle receivedPPA;
+	playerPosLookDir receivedPPLD;
 	sf::Vector2f vector1, vector2;
 	sf::Uint16 a, b;
 
@@ -234,8 +236,8 @@ void Level::decodePacket(sf::Packet packet) {
 		break;
 
 		case PLAYER_POS_ANGLE:
-			packet >> receivedPPA.position.x >> receivedPPA.position.y >> receivedPPA.rotateAngle;
-			game.updateEnemyVals(header_.senderName, receivedPPA);
+			packet >> receivedPPLD.position.x >> receivedPPLD.position.y >> receivedPPLD.lookDir.x >> receivedPPLD.lookDir.y;
+			game.updateEnemyVals(header_.senderName, receivedPPLD);
 		break;
 
 		case AREA_CAPTURED:

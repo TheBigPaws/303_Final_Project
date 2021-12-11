@@ -1,16 +1,34 @@
 #include "Game.h"
 
-void Game::updateEnemyVals(std::string name, playerPosAngle playerVals){
+void Game::updateEnemyVals(std::string name, playerPosLookDir playerVals) {
 	for (int i = 0; i < enemies.size(); i++) {
 		if (enemies.at(i).name == name) {
-			enemies.at(i).currentPos.x = playerVals.position.x;
-			enemies.at(i).currentPos.y = playerVals.position.y;
-			enemies.at(i).rotateAngle = playerVals.rotateAngle;
-			enemies.at(i).updatePositions();
+			enemies.at(i).receivedPos2 = enemies.at(i).receivedPos;
+			enemies.at(i).receivedPos = playerVals.position;
+			enemies.at(i).currentLookVector = playerVals.lookDir;
+			enemies.at(i).arrivedAtRecPos = false;
+			enemies.at(i).body.setFillColor(enemies.at(i).playerColour);
+			
+			enemies.at(i).predictedDirection = enemies.at(i).receivedPos - enemies.at(i).currentPos;
+			
+			float dir_magnitude = sqrt(enemies.at(i).predictedDirection.x * enemies.at(i).predictedDirection.x + enemies.at(i).predictedDirection.y * enemies.at(i).predictedDirection.y);
+			
+			enemies.at(i).predictedDirection = enemies.at(i).predictedDirection / dir_magnitude;
+
+			//if (dir_magnitude < 0.2f) {
+			//	enemies.at(i).arrivedAtRecPos = true;
+			//
+			//}
+			//
+			//if (enemies.at(i).receivedPos == enemies.at(i).receivedPos2 && enemies.at(i).arrivedAtRecPos) {
+			//	enemies.at(i).predictedDirection = sf::Vector2f(0, 0);
+			//}
+
 			break;
 		}
 	}
 }
+
 void Game::addEnemy(std::string name) {
 	Player protot = Player(window);
 	protot.name = name;
@@ -51,12 +69,17 @@ void Game::setup(sf::RenderWindow* window_, Input* input_) {
 	arialF.loadFromFile("font/arial.ttf");
 
 	gameTexts.push_back(sf::Text("ajo", arialF));
-	gameTexts.back().setPosition(0, 0);
+	gameTexts.push_back(sf::Text("You Died!", arialF,50));
+	gameTexts.back().setStyle(sf::Text::Bold);
+	gameTexts.back().setFillColor(sf::Color::Red);
+	//gameTexts.back().setPosition(0, 0);
 	player.currentPos.x = -999.5f + rand() % 2000;
 	player.currentPos.y = -999.5f + rand() % 2000;
 
 	enemyBullets.push_back(Bullet(sf::Vector2f(100, 100), sf::Vector2f(0, 0)));
 
+	gameOverTint = sf::RectangleShape(sf::Vector2f(window->getSize().x, window->getSize().y));
+	gameOverTint.setFillColor(sf::Color(255,0,0,100));
 }
 
 void Game::render() {
@@ -69,12 +92,10 @@ void Game::render() {
 	for (int i = 0; i < gameShapes.size(); i++) {
 		window->draw(gameShapes.at(i));
 	}
-	for (int i = 1; i < gameTexts.size(); i++) {
-		window->draw(gameTexts.at(i));
-	}
-	for (int i = 0; i < enemies.size(); i++) {
-		enemies.at(i).render();
-	}
+	//for (int i = 1; i < gameTexts.size(); i++) {
+	//	window->draw(gameTexts.at(i));
+	//}
+
 
 	for (int i = 0; i < myBullets.size(); i++) {
 		window->draw(myBullets.at(i).bullet);
@@ -84,28 +105,40 @@ void Game::render() {
 		window->draw(enemyBullets.at(i).bullet);
 	}
 
-	player.render();
+	for (int i = 0; i < enemies.size(); i++) {
+		enemies.at(i).render();
+	}
+
 	if (player.isCapturing) {
 		gameTexts.at(0).setString(std::to_string(player.captureTime));
 		gameTexts.at(0).setPosition(player.currentPos.x, player.currentPos.y);
 		window->draw(gameTexts.at(0));
 	}
 
-	
+	if (playerAlive) {
+		player.render();
+	}
+	else {
+		window->draw(gameOverTint);
+		window->draw(gameTexts.at(1));
+	}
 }
 
 
 void Game::update(float dt) {
 	
-	handleGameInput(dt);
-
-	player.handleInput(dt);
-	player.update(dt);
-	view.setCenter(player.currentPos.x,player.currentPos.y);
-	window->setView(view);
+	if (playerAlive) {
+		handleGameInput(dt);
+		player.handleInput(dt);
+		player.update(dt);
+		view.setCenter(player.currentPos.x, player.currentPos.y);
+		window->setView(view);
+	}
+	
 	
 	for (int i = 0; i < enemies.size();i++) {
 		enemies.at(i).update(dt);
+		enemies.at(i).interpolate(dt);
 	}
 	updateBullets(dt);
 }
@@ -113,12 +146,12 @@ void Game::update(float dt) {
 void Game::handleGameInput(float dt) {
 	if (input->isMouseLDown()) { //shoot anytime
 		input->setMouseLDown(false);
-		myBullets.push_back(Bullet(player.currentPos, player.lookVector));
+		myBullets.push_back(Bullet(player.currentPos, player.currentLookVector));
 		std::cout << "In game, i (" << player.name << ") shot a bullet with id " << myBullets.back().id << std::endl;
 		eventInfo shotInfo;
 		shotInfo.type = BULLET_SHOT_;
 		shotInfo.v1 = player.currentPos;
-		shotInfo.v2 = player.lookVector;
+		shotInfo.v2 = player.currentLookVector;
 		shotInfo.a = (int)myBullets.back().id;
 		importantEvents.push(shotInfo);
 	}
@@ -166,10 +199,6 @@ void Game::handleGameInput(float dt) {
 	}
 	
 
-	if (input->isKeyDown(sf::Keyboard::F)) {
-		input->setKeyUp(sf::Keyboard::F);
-		//playerDie
-	}
 }
 
 
@@ -193,6 +222,13 @@ void Game::updateBullets(float dt) {
 			//send info about the event and delete the bullet
 			importantEvents.push(playerHitInfo);
 			enemyBullets.erase(enemyBullets.begin() + i);
+
+			if (player.health <= 0.0f) {
+				playerAlive = false;
+				gameTexts.at(1).setPosition(player.currentPos.x - gameTexts.at(1).getLocalBounds().width / 2, player.currentPos.y - gameTexts.at(1).getLocalBounds().height / 2);
+				gameOverTint.setPosition(player.currentPos.x - window->getSize().x / 2, player.currentPos.y - window->getSize().y / 2);
+
+			}
 			break;
 		}
 
@@ -223,24 +259,34 @@ void Game::enemyGotHit(std::string hit_player, int bullet_id) {
 	for (int i = 0; i < enemies.size(); i++) {
 		if (enemies.at(i).name == hit_player) {
 			enemies.at(i).health -= 1.0f;
+			if (enemies.at(i).health <= 0) {
+				enemies.erase(enemies.begin() + i);
+			}
 			break;
 		}
-		//death here
 	}
 
 	//have to iterate through both my and enemy bullets, as it could be either of those
 	for (int i = 0; i < enemyBullets.size(); i++) {
 		if (enemyBullets.at(i).id == bullet_id) {
 			enemyBullets.erase(enemyBullets.begin() + i);
-			break;
+			return;
 		}
 	}
 
 	for (int i = 0; i < myBullets.size(); i++) {
 		if (myBullets.at(i).id == bullet_id) {
 			myBullets.erase(myBullets.begin() + i);
+			return;
+		}
+	}
+}
+
+void Game::disconnectPlayer(std::string name) {
+	for (int i = 0; i < enemies.size(); i++) {
+		if (enemies.at(i).name == name) {
+			enemies.erase(enemies.begin() + i);
 			break;
 		}
-		//death here
 	}
 }

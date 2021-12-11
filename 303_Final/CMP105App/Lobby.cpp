@@ -147,3 +147,7 @@ void Lobby::update(float dt) {
 
 	
 }
+
+void Lobby::disconnectPlayer(std::string name) {
+
+}

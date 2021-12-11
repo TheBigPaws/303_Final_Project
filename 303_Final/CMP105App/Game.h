@@ -3,9 +3,9 @@
 #include "Bullet.h"
 #include <queue>
 #include <iostream>
-struct playerPosAngle {
-	float rotateAngle;
+struct playerPosLookDir {
 	sf::Vector2f position;
+	sf::Vector2f lookDir;
 };
 enum eventType { AREA_CAPTURED_, BULLET_SHOT_,PLAYER_HIT_ };
 struct eventInfo {
@@ -21,7 +21,7 @@ class Game
 {
 private:
 
-	bool playerDead = false;
+	bool playerAlive = true;
 	float playerDeadTime = 10.0f;
 
 	sf::RenderWindow* window;
@@ -31,6 +31,7 @@ private:
 
 	std::vector<sf::RectangleShape> gameShapes;
 	sf::RectangleShape gameField[20][20];
+	sf::RectangleShape gameOverTint;
 	std::vector<sf::Text> gameTexts;
 
 	std::vector <Bullet> myBullets;
@@ -51,15 +52,15 @@ public:
 	void handleGameInput(float dt);
 	void updateBullets(float dt);
 
-	void updateEnemyVals(std::string name, playerPosAngle playerVals);
+	void updateEnemyVals(std::string name, playerPosLookDir playerVals);
 	void addEnemy(std::string name);
 	void addEnemyBullet(Bullet bullet) {
 		enemyBullets.push_back(bullet);
 		std::cout << "an enemy bullet with id " << enemyBullets.back().id << " was just shot.\n";
 	}
-	playerPosAngle getPlayerPosAngle(){
-		playerPosAngle ret;
-		ret.rotateAngle = player.rotateAngle;
+	playerPosLookDir getplayerPosLookDir(){
+		playerPosLookDir ret;
+		ret.lookDir = player.currentLookVector;
 		ret.position = player.currentPos;
 		return ret;
 	}
@@ -78,4 +79,6 @@ public:
 	void captureTile(int x, int y, std::string capturer_name);
 
 	void enemyGotHit(std::string hit_player, int bullet_id);
+
+	void disconnectPlayer(std::string name);
 };

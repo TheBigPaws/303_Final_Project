@@ -5,22 +5,27 @@ class Player
 {
 public:
 	std::string name = "aa";
+	sf::Font arial_F;
+	sf::Text name_t;
+	sf::CircleShape body;
+	sf::RectangleShape cannon, healthMax, healthNow;
+	sf::Color playerColour;
+
 	sf::RenderWindow* window;
 	Input* input;
+
 	bool isCapturing = false;
+	bool arrivedAtRecPos = false;
 	float captureTime = 3.0f;
 	float playerSpeed = 500.0f;
 	float health = 5.0f;
-	float rotateAngle;
-	sf::Font arial_F;
-	sf::Text name_t;
-	sf::Vector2f currentPos, receivedPos, lookVector;
-	sf::Color playerColour;
+
+	sf::Vector2f currentPos, receivedPos, receivedPos2, currentLookVector,receivedLookVector,predictedDirection;
+
 	Player() {};
 	Player(sf::RenderWindow* window_);
 	void setupInput(Input* input_);
 	void render() {
-		cannon.setRotation(rotateAngle);
 		window->draw(body);
 		window->draw(cannon);
 		//window->draw(name_t);
@@ -32,8 +37,6 @@ public:
 	void updatePositions();
 	void update(float dt);
 	void handleInput(float dt);
-	void interpolate();
-	sf::CircleShape body;
-	sf::RectangleShape cannon, healthMax, healthNow;
+	void interpolate(float dt);
 };
 

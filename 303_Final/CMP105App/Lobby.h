@@ -52,7 +52,7 @@ private:
 	std::vector<sf::Text> texts;
 	sf::Text gameTimer;
 	Button startCountDown, startNow;
-	float countDownTimer = 13.0f;
+	float countDownTimer = 3.0f;
 	bool buttonPressed = false;
 public:
 	Chat chat;
@@ -64,4 +64,7 @@ public:
 
 	void addPeer(std::string name, std::string IP_, std::string listPort);
 	int displayedPeerNr() { return peersInLob.size() - 1; }
+
+	void disconnectPlayer(std::string name);
+
 };

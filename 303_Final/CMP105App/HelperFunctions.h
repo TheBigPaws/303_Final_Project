@@ -19,6 +19,17 @@ static sf::RectangleShape constructRectangle(int midPosX, int midPosY, int sizeX
 	return returnRect;
 }
 
+//static void normalizeSFV2(sf::Vector2f & vector) {
+//
+//	float magnitude = sqrt(vector.x * vector->x + vector->y * vector->y);
+//
+//	sf::Vector2f a = vector;
+//
+//	//normalised look vector
+//	vector = a / magnitude;
+//}
+
+
 //BUTTON CLASS
 class Button {
 private:
