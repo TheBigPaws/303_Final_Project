@@ -1,5 +1,14 @@
 #include "Chat.h"
 
+//basic game loop oriented functions
+void Chat::setup(int midPosX_, int midPosY_, int sizeX_, int sizeY_) {
+	font_.loadFromFile("font/arial.ttf");
+	chatBG = sf::RectangleShape(sf::Vector2f(sizeX_, sizeY_));
+	chatBG.setFillColor(sf::Color::Black);
+	chatBG.setPosition(midPosX_ - sizeX_ / 2, midPosY_ - sizeY_ / 2);
+	textEntryField.setup(midPosX_, midPosY_ + sizeY_ / 2 - 15, sizeX_, 30, 15, false, sf::Color::Black, sf::Color::White);
+
+}
 
 void Chat::render(sf::RenderWindow* window_) {
 	window_->draw(chatBG);

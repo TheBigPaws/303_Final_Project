@@ -5,7 +5,7 @@ void Lobby::setup(sf::RenderWindow* window_, Input* input_) {
 	// sets up window, input and font
 	Screens_Base::setup(window_, input_);
 
-	
+
 	rectangles.push_back(sf::RectangleShape(sf::Vector2f(window->getSize().x/3, window->getSize().x / 3)));
 	rectangles.back().setPosition((float)window->getSize().x  - rectangles.back().getSize().x, window->getSize().y - rectangles.back().getSize().x);
 	rectangles.back().setFillColor(sf::Color(60, 60, 60));

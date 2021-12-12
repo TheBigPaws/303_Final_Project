@@ -7,9 +7,9 @@ class Screens_Base
 protected:
 	Input* input;
 	sf::Font arialF;
-public:
 	sf::RenderWindow* window;
+public:
 
-	void setup(sf::RenderWindow* window_, Input* input_);
+	virtual void setup(sf::RenderWindow* window_, Input* input_);
 };
 

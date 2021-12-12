@@ -59,7 +59,7 @@ bool P2P_Network::accept_TCP_new() {
 		peers.back()->socket.send(myName);
 
 		peers.back()->socket.setBlocking(false);
-		std::cout << "succesfully accepted Client " << peers.size() <<" at ip "<< peers.back()->IpAddress <<" with listener port "<< peers.back()->TCP_listener_Port << std::endl;
+		std::cout << "succesfully accepted " << peers.back()->name <<" at ip "<< peers.back()->IpAddress <<" with listener port "<< peers.back()->TCP_listener_Port << std::endl;
 
 		//share peers with the new 
 		if (should_share_p) {

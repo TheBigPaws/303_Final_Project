@@ -46,118 +46,113 @@ void Level::handleInput(float dt)
 // Update game objects
 void Level::update(float dt)
 {
-	//handle disconnects
-	if (networkModule.someoneDisconnected) {  
-		networkModule.someoneDisconnected = false;
-		game.disconnectPlayer(networkModule.disconnectedName);
-		lobby.disconnectPlayer(networkModule.disconnectedName);
-	}
-
-	//update current gamestate
 	switch (gameState) {
-		case MAIN_MENU: //MAIN MENU UPDATE
-			mainMenu.update(dt);
-			if (mainMenu.attemptConnect) {//if player clicked enter on the connect screen
-				mainMenu.attemptConnect = false;
-				networkModule.setMyName(mainMenu.getEnteredName());
-				game.setMyName(mainMenu.getEnteredName());//commented under is just ip address enter disabled
-				if (networkModule.connect_TCP_to(/*sf::IpAddress(mainMenu.getEnteredIP()*/sf::IpAddress::getLocalAddress(), (unsigned short)std::stoi(mainMenu.getEnteredPort()), true)) {
-					mainMenu.goToLobby = true;
-				}
-				else {
-					mainMenu.resetInput(true);
+	case MAIN_MENU: //MAIN MENU UPDATE
+		mainMenu.update(dt);
+		if (mainMenu.attemptConnect) {//if player clicked enter on the connect screen
+			mainMenu.attemptConnect = false;
+			networkModule.setMyName(mainMenu.getEnteredName());
+			game.setMyName(mainMenu.getEnteredName());//commented under is just ip address enter disabled
+			if (networkModule.connect_TCP_to(/*sf::IpAddress(mainMenu.getEnteredIP()*/sf::IpAddress::getLocalAddress(), (unsigned short)std::stoi(mainMenu.getEnteredPort()), true)) {
+				mainMenu.goToLobby = true;
+			}
+			else {
+				mainMenu.resetInput(true);
 
-				}
 			}
-			if (mainMenu.goToLobby) {
-				game.setMyName(mainMenu.getEnteredName());
-				networkModule.setMyName(mainMenu.getEnteredName());
-				lobby.addPeer(networkModule.getMyInfo()->name, networkModule.getMyInfo()->IpAddress.toString(), std::to_string(networkModule.getMyInfo()->TCP_listener_Port));
-				gameState = LOBBY;
-				game.getClock()->restart();
-			}
+		}
+		if (mainMenu.goToLobby) {
+			game.setMyName(mainMenu.getEnteredName());
+			networkModule.setMyName(mainMenu.getEnteredName());
+			lobby.addPeer(networkModule.getMyInfo()->name, networkModule.getMyInfo()->IpAddress.toString(), std::to_string(networkModule.getMyInfo()->TCP_listener_Port));
+			gameState = LOBBY;
+		}
 		break;
 
-		case LOBBY: //LOBBY CODE
-			if (networkModule.accept_TCP_new()) {
-				lobby.addPeer(networkModule.getPeer(networkModule.getPeerCount() -2)->name, networkModule.getPeer(networkModule.getPeerCount() - 2)->IpAddress.toString(), std::to_string(networkModule.getPeer(networkModule.getPeerCount() - 2)->TCP_listener_Port)); //display peers
+	case LOBBY: //LOBBY CODE
+		networkModule.accept_TCP_new();
+		//check if there's anyone new to add
+		if (lobby.displayedPeerNr() < networkModule.getPeerCount()) {
+			for (int i = 0; i < networkModule.getPeerCount(); i++) {
+				lobby.addPeer(networkModule.getPeer(i)->name, networkModule.getPeer(i)->IpAddress.toString(), std::to_string(networkModule.getPeer(i)->TCP_listener_Port)); //display peers
 			}
+		}
+		if (networkModule.someoneDisconnected) {
+			networkModule.someoneDisconnected = false;
+			lobby.disconnectPlayer(networkModule.disconnectedName);
+		}
 
-			if (networkModule.someoneDisconnected) {
-				networkModule.someoneDisconnected = false;
-				lobby.disconnectPlayer(networkModule.disconnectedName);
+		if (lobby.chat.sentSomething) {
+			sf::Packet packet;
+			header hdr_;
+			hdr_.game_elapsed_time = 0.0f;
+			hdr_.information_amount = 1;
+			hdr_.information_type = CHAT_MESSAGE;
+			hdr_.senderName = networkModule.getMyInfo()->name;
+			packet << hdr_ << lobby.chat.sent_string;
+			networkModule.pushOutPacket_all(packet);
+			lobby.chat.sentSomething = false;
+			lobby.chat.sent_string = "";
+			networkModule.sendAll_TCP();
+		}
+		lobby.update(dt);
+		if (lobby.startGame) {
+			for (int i = 0; i < networkModule.getPeerCount(); i++) {
+				game.addEnemy(networkModule.getPeer(i)->name);
 			}
-
-			//if (lobby.displayedPeerNr() != networkModule.getPeerCount()) {
-			//	for (int i = 0; i < networkModule.getPeerCount(); i++) {
-			//		lobby.addPeer(networkModule.getPeer(i)->name,networkModule.getPeer(i)->IpAddress.toString(), std::to_string(networkModule.getPeer(i)->TCP_listener_Port)); //display peers
-			//	}
-			//}
-
-			if (lobby.chat.sentSomething) {
-				sf::Packet packet;
-				header hdr_;
-				hdr_.game_elapsed_time = 0.0f;
-				hdr_.information_amount = 1;
-				hdr_.information_type = CHAT_MESSAGE;
-				hdr_.senderName = networkModule.getMyInfo()->name;
-				packet << hdr_ << lobby.chat.sent_string;
-				networkModule.pushOutPacket_all(packet);
-				lobby.chat.sentSomething = false;
-				lobby.chat.sent_string = "";
-				networkModule.sendAll_TCP();
-			}
-			lobby.update(dt);
-			if (lobby.startGame) {
-				gameState = GAME;
-			}
+			gameState = GAME;
+		}
 		break;
 
-		case GAME:
-			
-			
-			
+	case GAME:
 
-			game.update(dt);
 
-			
+		if (networkModule.someoneDisconnected) {
+			networkModule.someoneDisconnected = false;
+			game.disconnectPlayer(networkModule.disconnectedName);
+		}
+
+		game.update(dt);
+
+		
 		break;
 
-	}
-	decodeImportantGameEvs();
-	networkModule.receiveAll_TCP();
-	while (networkModule.anyPacketsToRead()) {
-		decodePacket(networkModule.getPacketToRead());
 	}
 
 	nwShareTimer -= dt;
+
 	if (nwShareTimer <= 0.0f) {
-
-
-
 		nwShareTimer = 0.1f;
 		sf::Packet packet;
 		header hdr_;
 		hdr_.game_elapsed_time = game.getClock()->getElapsedTime().asSeconds();
 		hdr_.senderName = networkModule.getMyInfo()->name;
-		hdr_.information_amount = 1;
 		switch (gameState) {
-			case LOBBY:
-				hdr_.information_amount = 0;
-				hdr_.information_type = ntn;
-				packet << hdr_;
-				break;
+		case LOBBY:
+			hdr_.information_amount = 0;
+			hdr_.information_type = ntn;
+			packet << hdr_;
+			networkModule.pushOutPacket_all(packet);
+			networkModule.sendAll_TCP();
+			break;
 
-			case GAME:
-				hdr_.information_type = PLAYER_POS_ANGLE;
-				playerPosLookDir myPLD = game.getplayerPosLookDir();
-				packet << hdr_ << myPLD.position.x << myPLD.position.y << myPLD.lookDir.x << myPLD.lookDir.y;
-				break;
+		case GAME:
+			hdr_.information_amount = 1;
+			hdr_.information_type = PLAYER_POS_ANGLE;
+			playerPosLookDir myPLD = game.getplayerPosLookDir();
+			packet << hdr_ << myPLD.position.x << myPLD.position.y << myPLD.lookDir.x << myPLD.lookDir.y;
+			networkModule.pushOutPacket_all(packet);
+			networkModule.sendAll_TCP();
+			break;
+
 		}
 		
+	}
 
-		networkModule.pushOutPacket_all(packet);
-		networkModule.sendAll_TCP();
+	decodeImportantGameEvs();
+	networkModule.receiveAll_TCP();
+	while (networkModule.anyPacketsToRead()) {
+		decodePacket(networkModule.getPacketToRead());
 	}
 }
 
@@ -165,24 +160,25 @@ void Level::update(float dt)
 void Level::render()
 {
 	beginDraw();
-	
+
 	switch (gameState) {
-		case MAIN_MENU:
-			mainMenu.render();
+	case MAIN_MENU:
+		mainMenu.render();
 		break;
 
-		case LOBBY:
-			lobby.render();
+	case LOBBY:
+		lobby.render();
 		break;
 
-		case GAME:
-			game.render();
+	case GAME:
+		game.render();
 		break;
 	}
 
-	
+
 	endDraw();
 }
+
 
 // Begins rendering to the back buffer. Background colour set to light blue.
 void Level::beginDraw()
@@ -253,7 +249,7 @@ void Level::decodePacket(sf::Packet packet) {
 		case NW_INFO:
 			packet >> info_;
 			if (networkModule.connect_TCP_to(sf::IpAddress(info_.ipAddress), (unsigned short)info_.listenerPort, 0)) {
-				lobby.addPeer(networkModule.getPeer(networkModule.getPeerCount() - 2)->name, sf::IpAddress(info_.ipAddress).toString(), std::to_string((unsigned short)info_.listenerPort));
+				lobby.addPeer(networkModule.getLastAddedPeer()->name, sf::IpAddress(info_.ipAddress).toString(), std::to_string((unsigned short)info_.listenerPort));
 			}
 		break;
 

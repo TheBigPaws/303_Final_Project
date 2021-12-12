@@ -5,7 +5,7 @@ void MainMenu::setup(sf::RenderWindow* window_, Input* input_){
 
 	// sets up window, input and font
 	Screens_Base::setup(window_, input_);
-	
+
 	IPfield.setup(window->getSize().x / 2, window->getSize().y / 2 - 40, 300, 50, 25);
 	PortField.setup(window->getSize().x / 2, window->getSize().y / 2 + 40, 300, 50, 25, true);
 	NameField.setup(window->getSize().x / 2, window->getSize().y - 30, 500, 60, 26, false, sf::Color(217, 217, 247));

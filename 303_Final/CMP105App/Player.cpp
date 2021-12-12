@@ -20,6 +20,11 @@ Player::Player(sf::RenderWindow* window_) {
 	name_t.setFillColor(sf::Color::Black);
 	name_t.setOutlineThickness(1);
 	name_t.setOutlineColor(sf::Color::White);
+	srand(time(NULL));
+
+	currentPos.x = -999.5f + (float)(rand() % 2000);
+	currentPos.y = -999.5f + (float)(rand() % 2000);
+	receivedPos = currentPos;
 }
 
 //in a separate function from constructior so we don't link enemies to my input - unsafe, unnecessary

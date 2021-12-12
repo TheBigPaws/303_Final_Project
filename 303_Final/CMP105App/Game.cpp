@@ -9,10 +9,14 @@ void Game::updateEnemyVals(std::string name, playerPosLookDir playerVals) {
 			enemies.at(i).arrivedAtRecPos = false;
 			enemies.at(i).body.setFillColor(enemies.at(i).playerColour);
 			
+			if (enemies.at(i).currentPos.x == -17000) {//on game startup, set enemy to starting position instead of interpolating there
+				enemies.at(i).currentPos = enemies.at(i).receivedPos;
+			}
+
 			enemies.at(i).predictedDirection = enemies.at(i).receivedPos - enemies.at(i).currentPos;
 			
 			float dir_magnitude = sqrt(enemies.at(i).predictedDirection.x * enemies.at(i).predictedDirection.x + enemies.at(i).predictedDirection.y * enemies.at(i).predictedDirection.y);
-			
+
 			enemies.at(i).predictedDirection = enemies.at(i).predictedDirection / dir_magnitude;
 
 			//if (dir_magnitude < 0.2f) {
@@ -33,8 +37,8 @@ void Game::addEnemy(std::string name) {
 	Player protot = Player(window);
 	protot.name = name;
 	protot.name_t.setString(name);
-	protot.currentPos.x = 0;
-	protot.currentPos.y = 0;
+	protot.currentPos = sf::Vector2f(-17000,-17000);
+	protot.receivedPos = sf::Vector2f(-17000,-17000);
 	enemies.push_back(protot);
 }
 
@@ -46,6 +50,7 @@ void Game::setup(sf::RenderWindow* window_, Input* input_) {
 	player = Player(window);
 	player.setupInput(input);
 	//set up gameWorld
+	std::cout << "playerPos is " << player.currentPos.x << " " << player.currentPos.y << std::endl;
 
 	view.reset(sf::FloatRect(0, 0, window->getSize().x, window->getSize().y));
 
@@ -75,10 +80,7 @@ void Game::setup(sf::RenderWindow* window_, Input* input_) {
 	gameTexts.back().setStyle(sf::Text::Bold);
 	gameTexts.back().setFillColor(sf::Color::Red);
 	//gameTexts.back().setPosition(0, 0);
-	player.currentPos.x = -999.5f + rand() % 2000;
-	player.currentPos.y = -999.5f + rand() % 2000;
-
-	enemyBullets.push_back(Bullet(sf::Vector2f(100, 100), sf::Vector2f(0, 0)));
+	
 
 	gameOverTint = sf::RectangleShape(sf::Vector2f(window->getSize().x, window->getSize().y));
 	gameOverTint.setFillColor(sf::Color(255,0,0,100));
@@ -129,6 +131,7 @@ void Game::render() {
 
 void Game::update(float dt) {
 	
+
 	if (playerAlive) {
 		handleGameInput(dt);
 		player.handleInput(dt);
