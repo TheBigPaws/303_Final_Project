@@ -40,6 +40,7 @@ public:
 
 	int getPeerCount() { return peers.size() - 1; }
 	Peer* getPeer(int at) { return peers.at(at); }
+	Peer* getLastAddedPeer(int at) { return peers.at(peers.size()-2); }
 	Peer* getMyInfo() { return &myInfo; }
 	void setMyName(std::string name) { myInfo.name = name; }
 	bool someoneDisconnected = false;

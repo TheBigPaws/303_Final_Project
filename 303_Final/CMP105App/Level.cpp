@@ -46,6 +46,14 @@ void Level::handleInput(float dt)
 // Update game objects
 void Level::update(float dt)
 {
+	//handle disconnects
+	if (networkModule.someoneDisconnected) {  
+		networkModule.someoneDisconnected = false;
+		game.disconnectPlayer(networkModule.disconnectedName);
+		lobby.disconnectPlayer(networkModule.disconnectedName);
+	}
+
+	//update current gamestate
 	switch (gameState) {
 		case MAIN_MENU: //MAIN MENU UPDATE
 			mainMenu.update(dt);
@@ -66,6 +74,7 @@ void Level::update(float dt)
 				networkModule.setMyName(mainMenu.getEnteredName());
 				lobby.addPeer(networkModule.getMyInfo()->name, networkModule.getMyInfo()->IpAddress.toString(), std::to_string(networkModule.getMyInfo()->TCP_listener_Port));
 				gameState = LOBBY;
+				game.getClock()->restart();
 			}
 		break;
 
@@ -100,37 +109,18 @@ void Level::update(float dt)
 			}
 			lobby.update(dt);
 			if (lobby.startGame) {
-				for (int i = 0; i < networkModule.getPeerCount(); i++) {
-					game.addEnemy(networkModule.getPeer(i)->name);
-					gameState = GAME;
-				}
+				gameState = GAME;
 			}
 		break;
 
 		case GAME:
 			
-			nwShareTimer -= dt;
 			
-			if (networkModule.someoneDisconnected) {
-				networkModule.someoneDisconnected = false;
-				game.disconnectPlayer(networkModule.disconnectedName);
-			}
+			
 
 			game.update(dt);
 
-			if (nwShareTimer <= 0.0f) {
-				nwShareTimer = 0.1f;
-				sf::Packet packet;
-				header hdr_;
-				hdr_.game_elapsed_time = 0.0f;
-				hdr_.information_amount = 1;
-				hdr_.information_type = PLAYER_POS_ANGLE;
-				hdr_.senderName = networkModule.getMyInfo()->name;
-				playerPosLookDir myPLD = game.getplayerPosLookDir();
-				packet << hdr_ << myPLD.position.x << myPLD.position.y << myPLD.lookDir.x << myPLD.lookDir.y;
-				networkModule.pushOutPacket_all(packet);
-				networkModule.sendAll_TCP();
-			}
+			
 		break;
 
 	}
@@ -138,6 +128,36 @@ void Level::update(float dt)
 	networkModule.receiveAll_TCP();
 	while (networkModule.anyPacketsToRead()) {
 		decodePacket(networkModule.getPacketToRead());
+	}
+
+	nwShareTimer -= dt;
+	if (nwShareTimer <= 0.0f) {
+
+
+
+		nwShareTimer = 0.1f;
+		sf::Packet packet;
+		header hdr_;
+		hdr_.game_elapsed_time = game.getClock()->getElapsedTime().asSeconds();
+		hdr_.senderName = networkModule.getMyInfo()->name;
+		hdr_.information_amount = 1;
+		switch (gameState) {
+			case LOBBY:
+				hdr_.information_amount = 0;
+				hdr_.information_type = ntn;
+				packet << hdr_;
+				break;
+
+			case GAME:
+				hdr_.information_type = PLAYER_POS_ANGLE;
+				playerPosLookDir myPLD = game.getplayerPosLookDir();
+				packet << hdr_ << myPLD.position.x << myPLD.position.y << myPLD.lookDir.x << myPLD.lookDir.y;
+				break;
+		}
+		
+
+		networkModule.pushOutPacket_all(packet);
+		networkModule.sendAll_TCP();
 	}
 }
 

@@ -4,22 +4,17 @@ Player::Player(sf::RenderWindow* window_) {
 	window = window_;
 	playerColour = sf::Color(rand() % 256, rand() % 256, rand() % 256);
 
-	body = sf::CircleShape(30);
-	body.setFillColor(playerColour);
-	body.setOutlineThickness(5);
-	body.setOutlineColor(sf::Color::White);
 
-	cannon = sf::RectangleShape(sf::Vector2f(80, 20));
-	cannon.setFillColor(sf::Color::Black);
-	cannon.setOutlineThickness(3);
-	cannon.setOutlineColor(sf::Color::White);
+	body = constructSphere(0, 0, 30, playerColour, 5, sf::Color::White);
 
-	healthNow = sf::RectangleShape(sf::Vector2f(50, 10));
-	healthNow.setFillColor(sf::Color::Green);
+	cannon = constructRectangle(0, 0, 80, 20, sf::Color::Black, 3, sf::Color::White);
 
-	healthMax = sf::RectangleShape(sf::Vector2f(50, 10));
-	healthMax.setFillColor(sf::Color::Red);
 
+	healthNow = constructRectangle(0, 0, 50, 10, sf::Color::Green);
+
+	healthMax = constructRectangle(0, 0, 50, 10, sf::Color::Red);
+
+	//not working rn
 	arial_F.loadFromFile("font/arial.ttf");
 	name_t = sf::Text("aaa", arial_F,20);
 	name_t.setFillColor(sf::Color::Black);
@@ -27,6 +22,7 @@ Player::Player(sf::RenderWindow* window_) {
 	name_t.setOutlineColor(sf::Color::White);
 }
 
+//in a separate function from constructior so we don't link enemies to my input - unsafe, unnecessary
 void Player::setupInput(Input* input_) {
 	input = input_;
 	
@@ -34,6 +30,7 @@ void Player::setupInput(Input* input_) {
 }
 
 void Player::updatePositions() {
+
 	body.setPosition(currentPos.x - body.getRadius(), currentPos.y - body.getRadius());
 	cannon.setPosition(currentPos.x, currentPos.y - cannon.getSize().y / 2);
 	healthNow.setPosition(currentPos.x - 25, currentPos.y + 30);
@@ -43,6 +40,7 @@ void Player::updatePositions() {
 
 void Player::update(float dt) {
 	
+	//update player variables
 	if (isCapturing) {
 		captureTime -= dt;
 	}
@@ -66,11 +64,9 @@ void Player::update(float dt) {
 
 void Player::handleInput(float dt) {
 	
+	//create normalised look vector and save it
 	sf::Vector2f playerToCursor = sf::Vector2f(input->getMouseX() - (int)window->getSize().x / 2, input->getMouseY() - (int)window->getSize().y / 2);
-
 	float magnitude = sqrt(playerToCursor.x * playerToCursor.x + playerToCursor.y * playerToCursor.y);
-
-	//normalised look vector
 	currentLookVector = playerToCursor / magnitude;
 
 	updatePositions();
@@ -85,38 +81,6 @@ void Player::handleInput(float dt) {
 }
 
 void Player::interpolate(float dt) {
-	//if (abs(currentLookVector.x - receivedLookVector.x) > 0.05) {
-	//	if (currentLookVector.x < receivedLookVector.x) {
-	//		currentLookVector.x += dt * 2;
-	//	}
-	//	else {
-	//		currentLookVector.x -= dt * 2;
-	//	}
-	//
-	//}
-	//
-	//if (abs(currentLookVector.y - receivedLookVector.y) > 0.05) {
-	//	if (currentLookVector.y < receivedLookVector.y) {
-	//		currentLookVector.y += dt * 2;
-	//	}
-	//	else {
-	//		currentLookVector.y -= dt * 2;
-	//	}
-	//}
-	
-	//if (!arrivedAtRecPos) {
-	//
-		
-	//	if (dist_magnitude < 0.2f) {
-	//		body.setFillColor(sf::Color::Red);		//arrived
-	//		arrivedAtRecPos = true;
-	//		playerSpeed = 300.0f;
-	//	}
-	//
-	//}
-	//else {
-	//
-	//}
 
 	
 

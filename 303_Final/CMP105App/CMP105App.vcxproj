@@ -158,6 +158,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Chat.cpp" />
     <ClCompile Include="Framework\Animation.cpp" />
     <ClCompile Include="Framework\AudioManager.cpp" />
     <ClCompile Include="Framework\Collision.cpp" />
@@ -167,7 +168,6 @@
     <ClCompile Include="Framework\SoundObject.cpp" />
     <ClCompile Include="Framework\Vector.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="HelperFunctions.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Lobby.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -175,6 +175,8 @@
     <ClCompile Include="P2P_Network.cpp" />
     <ClCompile Include="PacketBase.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Screens_Base.cpp" />
+    <ClCompile Include="UI_tools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="DO_NOT_EDIT.txt" />
@@ -182,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Chat.h" />
     <ClInclude Include="Framework\Animation.h" />
     <ClInclude Include="Framework\AudioManager.h" />
     <ClInclude Include="Framework\Collision.h" />
@@ -198,6 +201,8 @@
     <ClInclude Include="P2P_Network.h" />
     <ClInclude Include="PacketBase.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Screens_Base.h" />
+    <ClInclude Include="UI_tools.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

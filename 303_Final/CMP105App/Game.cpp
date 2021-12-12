@@ -39,7 +39,10 @@ void Game::addEnemy(std::string name) {
 }
 
 void Game::setup(sf::RenderWindow* window_, Input* input_) {
-	window = window_; input = input_;
+	
+	// sets up window, input and font
+	Screens_Base::setup(window_, input_);
+
 	player = Player(window);
 	player.setupInput(input);
 	//set up gameWorld
@@ -66,7 +69,6 @@ void Game::setup(sf::RenderWindow* window_, Input* input_) {
 		gameShapes.push_back(constructRectangle(0, y * tileSize, 20 * tileSize, 2, sf::Color::Black));
 	}
 
-	arialF.loadFromFile("font/arial.ttf");
 
 	gameTexts.push_back(sf::Text("ajo", arialF));
 	gameTexts.push_back(sf::Text("You Died!", arialF,50));

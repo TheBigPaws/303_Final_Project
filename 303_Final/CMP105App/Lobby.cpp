@@ -1,8 +1,10 @@
 #include "Lobby.h"
 
 void Lobby::setup(sf::RenderWindow* window_, Input* input_) {
-	window = window_; input = input_;
-	arialF.loadFromFile("font/arial.ttf");
+	
+	// sets up window, input and font
+	Screens_Base::setup(window_, input_);
+
 	
 	rectangles.push_back(sf::RectangleShape(sf::Vector2f(window->getSize().x/3, window->getSize().x / 3)));
 	rectangles.back().setPosition((float)window->getSize().x  - rectangles.back().getSize().x, window->getSize().y - rectangles.back().getSize().x);

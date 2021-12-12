@@ -1,38 +1,91 @@
-﻿  Level.cpp
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\P2P_Network.h(41,21): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunctions.h(16,41): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+﻿  Game.cpp
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunctions.h(7,73): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunctions.h(16,34): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunctions.h(7,66): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunctions.h(17,65): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunctions.h(11,65): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunctions.h(17,46): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\HelperFunctions.h(11,46): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.h(52,93): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(50,71): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(50,50): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(56,74): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.h(52,58): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(56,64): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.h(54,42): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.h(54,25): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.h(55,49): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.h(89,24): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Level.cpp(219,13): warning C4101: 'int32holder': unreferenced local variable
-  CMP105App.vcxproj -> D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\x64\Debug\CMP105App.exe
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(58,39): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(58,25): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(83,87): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(83,66): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(190,47): warning C4244: '=': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(191,47): warning C4244: '=': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(198,62): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Game.cpp(198,47): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+Lobby.obj : error LNK2019: unresolved external symbol "public: void __cdecl Chat::setup(int,int,int,int)" (?setup@Chat@@QEAAXHHHH@Z) referenced in function "public: void __cdecl Lobby::setup(class sf::RenderWindow *,class Input *)" (?setup@Lobby@@QEAAXPEAVRenderWindow@sf@@PEAVInput@@@Z)
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\x64\Debug\CMP105App.exe : fatal error LNK1120: 1 unresolved externals

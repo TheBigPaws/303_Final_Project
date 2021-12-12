@@ -1,16 +1,13 @@
 #pragma once
-#include "HelperFunctions.h"
-#include "Framework/Input.h"
+#include "Screens_Base.h"
+#include "UI_tools.h"
 //#include "Framework/AudioManager.h"
 
 
 
-class MainMenu :public GameObject
+class MainMenu : public Screens_Base
 {
 private:
-	sf::RenderWindow* window;
-	Input* input;
-	sf::Font arialF;
 
 	sf::Text gameTitletxt,connectPromptIP, connectPromptPort,enterNameText;
 	bool showConnectPrompt = false;
@@ -25,6 +22,7 @@ private:
 	//interactive elements
 	TextField IPfield,PortField,NameField;
 	Button connectButton,hostButton,connectCloseButton;
+
 public:
 	void setup(sf::RenderWindow* window_, Input* input_);
 	void render();

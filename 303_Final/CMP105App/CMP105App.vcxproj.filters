@@ -69,9 +69,6 @@
     <ClCompile Include="MainMenu.cpp">
       <Filter>Screens</Filter>
     </ClCompile>
-    <ClCompile Include="HelperFunctions.cpp">
-      <Filter>Helper Functions</Filter>
-    </ClCompile>
     <ClCompile Include="Lobby.cpp">
       <Filter>Screens</Filter>
     </ClCompile>
@@ -83,6 +80,15 @@
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>Game Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Screens_Base.cpp">
+      <Filter>Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_tools.cpp">
+      <Filter>Helper Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="Chat.cpp">
+      <Filter>Helper Functions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +150,15 @@
     </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>Game Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Screens_Base.h">
+      <Filter>Screens</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_tools.h">
+      <Filter>Helper Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="Chat.h">
+      <Filter>Helper Functions</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 #pragma once
 #include "Player.h"
 #include "Bullet.h"
+#include "Screens_Base.h"
 #include <queue>
 #include <iostream>
 struct playerPosLookDir {
@@ -17,17 +18,14 @@ struct eventInfo {
 	int a;
 };
 
-class Game
+class Game : public Screens_Base
 {
 private:
 
 	bool playerAlive = true;
 	float playerDeadTime = 10.0f;
 
-	sf::RenderWindow* window;
 	sf::View view;
-	Input* input;
-	sf::Font arialF;
 
 	std::vector<sf::RectangleShape> gameShapes;
 	sf::RectangleShape gameField[20][20];
@@ -41,6 +39,7 @@ private:
 	std::vector<Player> enemies;
 
 	std::queue<eventInfo> importantEvents;
+	sf::Clock gameClock;
 public:
 	void setMyName(std::string name) {
 		player.name = name;
@@ -81,4 +80,8 @@ public:
 	void enemyGotHit(std::string hit_player, int bullet_id);
 
 	void disconnectPlayer(std::string name);
+
+	sf::Clock* getClock() {
+		return &gameClock;
+	}
 };
