@@ -37,7 +37,9 @@ void Level::handleInput(float dt)
 		window->close();
 	}
 
-
+	if (input->isKeyDown(sf::Keyboard::Comma)) {
+		lobby.addPeer(std::to_string(rand() % 1500),"test", "test");
+	}
 
 }
 
@@ -68,12 +70,20 @@ void Level::update(float dt)
 		break;
 
 		case LOBBY: //LOBBY CODE
-			networkModule.accept_TCP_new();
-			if (lobby.displayedPeerNr() != networkModule.getPeerCount()) {
-				for (int i = 0; i < networkModule.getPeerCount(); i++) {
-					lobby.addPeer(networkModule.getPeer(i)->name,networkModule.getPeer(i)->IpAddress.toString(), std::to_string(networkModule.getPeer(i)->TCP_listener_Port)); //display peers
-				}
+			if (networkModule.accept_TCP_new()) {
+				lobby.addPeer(networkModule.getPeer(networkModule.getPeerCount() -2)->name, networkModule.getPeer(networkModule.getPeerCount() - 2)->IpAddress.toString(), std::to_string(networkModule.getPeer(networkModule.getPeerCount() - 2)->TCP_listener_Port)); //display peers
 			}
+
+			if (networkModule.someoneDisconnected) {
+				networkModule.someoneDisconnected = false;
+				lobby.disconnectPlayer(networkModule.disconnectedName);
+			}
+
+			//if (lobby.displayedPeerNr() != networkModule.getPeerCount()) {
+			//	for (int i = 0; i < networkModule.getPeerCount(); i++) {
+			//		lobby.addPeer(networkModule.getPeer(i)->name,networkModule.getPeer(i)->IpAddress.toString(), std::to_string(networkModule.getPeer(i)->TCP_listener_Port)); //display peers
+			//	}
+			//}
 
 			if (lobby.chat.sentSomething) {
 				sf::Packet packet;
@@ -223,7 +233,7 @@ void Level::decodePacket(sf::Packet packet) {
 		case NW_INFO:
 			packet >> info_;
 			if (networkModule.connect_TCP_to(sf::IpAddress(info_.ipAddress), (unsigned short)info_.listenerPort, 0)) {
-
+				lobby.addPeer(networkModule.getPeer(networkModule.getPeerCount() - 2)->name, sf::IpAddress(info_.ipAddress).toString(), std::to_string((unsigned short)info_.listenerPort));
 			}
 		break;
 

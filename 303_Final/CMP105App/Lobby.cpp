@@ -64,17 +64,20 @@ void Lobby::addPeer(std::string name, std::string IP_, std::string listPort) {
 	}
 
 	for (int i = 0; i < peersInLob.size(); i++) {//ADD ALL THE CONNECTING LINES
-		sf::Vector2f protToPeer = sf::Vector2f(peersInLob.at(i).positionX - posX, peersInLob.at(i).positionY - posY);
-		rectangles.push_back(sf::RectangleShape(sf::Vector2f(sqrt(protToPeer.x * protToPeer.x + protToPeer.y * protToPeer.y), 5)));
-		rectangles.back().setPosition(posX,posY);
-		rectangles.back().rotate(atan(protToPeer.y/protToPeer.x)* 57.32);
-		if (protToPeer.x < 0) {
-			rectangles.back().rotate(180);
-			int colorR = 50 + rand() % 200;
-			int colorG = 50 + rand() % 200;
-			int colorB = 50 + rand() % 200;
-			rectangles.back().setFillColor(sf::Color(colorR, colorG, colorB, 255));
-		}
+		//sf::Vector2f protToPeer = sf::Vector2f(peersInLob.at(i).positionX - posX, peersInLob.at(i).positionY - posY);
+		//rectangles.push_back(sf::RectangleShape(sf::Vector2f(sqrt(protToPeer.x * protToPeer.x + protToPeer.y * protToPeer.y), 5)));
+		//rectangles.back().setPosition(posX,posY);
+		//rectangles.back().rotate(atan(protToPeer.y/protToPeer.x)* 57.32);
+		//if (protToPeer.x < 0) {
+		//	rectangles.back().rotate(180);
+		//	int colorR = 50 + rand() % 200;
+		//	int colorG = 50 + rand() % 200;
+		//	int colorB = 50 + rand() % 200;
+		//	rectangles.back().setFillColor(sf::Color(colorR, colorG, colorB, 255));
+		//}
+		graphicPeerConnectLine a;
+		a.createConnectLine(protot, peersInLob.at(i));
+		peersConnectLines.push_back(a);
 	}
 	peersInLob.push_back(protot);
 
@@ -86,6 +89,10 @@ void Lobby::addPeer(std::string name, std::string IP_, std::string listPort) {
 void Lobby::render() {
 	for (int i = 0; i < rectangles.size(); i++) {
 		window->draw(rectangles.at(i));
+	}
+
+	for (int i = 0; i < peersConnectLines.size(); i++) {
+		window->draw(peersConnectLines.at(i).line);
 	}
 
 	for (int i = 0; i < texts.size(); i++) {
@@ -149,5 +156,17 @@ void Lobby::update(float dt) {
 }
 
 void Lobby::disconnectPlayer(std::string name) {
+	for (int i = 0; i < peersInLob.size(); i++) {
+		if (peersInLob.at(i).Name.getString() == name) {
+			peersInLob.erase(peersInLob.begin() + i);
+			break;
+		}
+	}
 
+	for (int i = 0; i < peersConnectLines.size(); i++) {
+		if (peersConnectLines.at(i).peer1_name == name || peersConnectLines.at(i).peer2_name == name) {
+			peersConnectLines.erase(peersConnectLines.begin() + i);
+			i--;
+		}
+	}
 }

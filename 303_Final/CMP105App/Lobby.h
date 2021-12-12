@@ -41,6 +41,28 @@ struct graphicPeer {
 	}
 };
 
+struct graphicPeerConnectLine {
+	std::string peer1_name,peer2_name;
+	sf::RectangleShape line;
+	void createConnectLine(graphicPeer peer1, graphicPeer peer2) { //connects p1 TO p2
+
+		peer1_name = peer1.Name.getString();
+		peer2_name = peer2.Name.getString();
+
+		sf::Vector2f protToPeer = sf::Vector2f(peer2.positionX - peer1.positionX, peer2.positionY - peer1.positionY);
+		line = sf::RectangleShape(sf::Vector2f(sqrt(protToPeer.x * protToPeer.x + protToPeer.y * protToPeer.y), 5));
+		line.setPosition(peer1.positionX, peer1.positionY);
+		line.rotate(atan(protToPeer.y / protToPeer.x) * 57.32);
+		if (protToPeer.x < 0) {
+			line.rotate(180);
+			int colorR = 50 + rand() % 200;
+			int colorG = 50 + rand() % 200;
+			int colorB = 50 + rand() % 200;
+			line.setFillColor(sf::Color(colorR, colorG, colorB, 255));
+		}
+	}
+};
+
 class Lobby :public GameObject
 {
 private:
@@ -48,11 +70,12 @@ private:
 	Input* input;
 	sf::Font arialF;
 	std::vector<graphicPeer> peersInLob;
+	std::vector<graphicPeerConnectLine> peersConnectLines;
 	std::vector<sf::RectangleShape> rectangles;
 	std::vector<sf::Text> texts;
 	sf::Text gameTimer;
 	Button startCountDown, startNow;
-	float countDownTimer = 3.0f;
+	float countDownTimer = 30.0f;
 	bool buttonPressed = false;
 public:
 	Chat chat;

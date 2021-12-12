@@ -115,6 +115,7 @@ bool P2P_Network::connect_TCP_to(sf::IpAddress hostIP, unsigned short port,bool 
 		peers.back()->socket.setBlocking(false);
 
 		//set up another slot for a potential peer
+		// dobry den pan ucitel stevo machajdik
 		peers.push_back(new Peer);
 
 		std::cout << "Succesfully connected to "<<hostIP <<"on port "<<port << " whith name "<< theirName << std::endl;
