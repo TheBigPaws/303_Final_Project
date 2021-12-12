@@ -6,22 +6,26 @@ void MainMenu::setup(sf::RenderWindow* window_, Input* input_){
 	// sets up window, input and font
 	Screens_Base::setup(window_, input_);
 
-	IPfield.setup(window->getSize().x / 2, window->getSize().y / 2 - 40, 300, 50, 25);
-	PortField.setup(window->getSize().x / 2, window->getSize().y / 2 + 40, 300, 50, 25, true);
-	NameField.setup(window->getSize().x / 2, window->getSize().y - 30, 500, 60, 26, false, sf::Color(217, 217, 247));
+	IPfield.setup(sf::Vector2f(window->getSize().x / 2, window->getSize().y / 2 - 40), sf::Vector2f(300, 50), 25);
+	PortField.setup(sf::Vector2f(window->getSize().x / 2, window->getSize().y / 2 + 40), sf::Vector2f(300, 50), 25, true);
+	NameField.setup(sf::Vector2f(window->getSize().x / 2, window->getSize().y - 30), sf::Vector2f(500, 60), 26, false, sf::Color(217, 217, 247));
 
+	gameTitletxt = sf::Text("Tank Capture Game",arialF);
 	gameTitletxt = sf::Text("Tank Capture Game",arialF);
 	gameTitletxt.setCharacterSize(30);
 	gameTitletxt.setStyle(sf::Text::Bold);
 	gameTitletxt.setPosition(window->getSize().x / 2 - gameTitletxt.getLocalBounds().width/2, 50);
 
 	connectPrompt = sf::RectangleShape(sf::Vector2f(window->getSize().x / 2, window->getSize().y / 2));
+	connectPrompt = sf::RectangleShape(sf::Vector2f(window->getSize().x / 2, window->getSize().y / 2));
 	connectPrompt.setPosition(window->getSize().x / 4, window->getSize().y / 4);
 	connectPrompt.setFillColor(sf::Color::White);
 
 	connectPromptIP = gameTitletxt;
+	connectPromptIP = gameTitletxt;
 	gameTitletxt.setOutlineThickness(5);
 
+	connectPromptIP.setCharacterSize(25);
 	connectPromptIP.setCharacterSize(25);
 	connectPromptIP.setStyle(sf::Text::Italic);
 	connectPromptIP.setFillColor(sf::Color::Black);
@@ -30,17 +34,19 @@ void MainMenu::setup(sf::RenderWindow* window_, Input* input_){
 
 
 	connectPromptPort = connectPromptIP;
+	connectPromptPort = connectPromptIP;
 	connectPromptPort.setString("Port:");
 	connectPromptPort.setPosition(window->getSize().x / 2 - 150 - connectPromptPort.getLocalBounds().width, window->getSize().y / 2+40);
 
+	enterNameText = connectPromptPort;
 	enterNameText = connectPromptPort;
 	enterNameText.setString("Enter Name:");
 	enterNameText.setPosition(window->getSize().x / 2 - enterNameText.getLocalBounds().width/2, window->getSize().y - 100);
 
 
-	hostButton.setup(window->getSize().x / 2, window->getSize().y / 4, 200, 50, "Host",30);
-	connectButton.setup(window->getSize().x / 2, window->getSize().y / 4 + 100, 200, 50, "Connect",30);
-	connectCloseButton.setup(window->getSize().x / 4 * 3, window->getSize().y / 4, 40, 40, "X",20,sf::Color::Red);
+	hostButton.setup(sf::Vector2f(window->getSize().x / 2, window->getSize().y / 4), sf::Vector2f(200, 50), "Host",30);
+	connectButton.setup(sf::Vector2f(window->getSize().x / 2, window->getSize().y / 4 + 100), sf::Vector2f(200, 50), "Connect",30);
+	connectCloseButton.setup(sf::Vector2f(window->getSize().x / 4 * 3, window->getSize().y / 4), sf::Vector2f(40, 40), "X",20,sf::Color::Red);
 
 }
 

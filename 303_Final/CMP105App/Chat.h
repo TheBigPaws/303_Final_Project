@@ -1,11 +1,11 @@
 #pragma once
 #include "UI_tools.h"
+#include "Screens_Base.h"
 #include <chrono>
 #include <ctime>
 
-class Chat {
+class Chat : public Screens_Base {
 private:
-	sf::Font font_;
 	TextField textEntryField;
 	sf::RectangleShape chatBG;
 	std::vector<sf::Text> chatMessages;
@@ -15,9 +15,10 @@ public:
 	std::string sent_string;
 
 	//basic game loop oriented functions
-	void setup(int midPosX_, int midPosY_, int sizeX_, int sizeY_);
-	void render(sf::RenderWindow* window_);
-	void update(Input* input_);
+	void setPosSize(sf::Vector2f position, sf::Vector2f size);
+	void setup(sf::RenderWindow* window_, Input* input_);
+	void render();
+	void update();
 
 	//chat specific functions
 	void addMessage(std::string message, sf::Color msgColor = sf::Color::White, std::string senderName = "Me");

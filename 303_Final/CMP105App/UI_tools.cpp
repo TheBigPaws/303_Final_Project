@@ -1,51 +1,42 @@
 #include "UI_tools.h"
 
 
-void Button::setup(int midPosX_, int midPosY_, int sizeX_, int sizeY_, sf::String string, int fontSize, sf::Color fillColour, sf::Color outlineColour) {
+void Button::setup(sf::Vector2f position_, sf::Vector2f size_, sf::String string, int fontSize, sf::Color fillColour_, sf::Color outlineColour_) {
 
+	font_.loadFromFile("font/arial.ttf");
 	//store variables
-	midPosX = midPosX_;
-	midPosY = midPosY_;
-	sizeX = sizeX_;
-	sizeY = sizeY_;
-	fillColour_ = fillColour;
-	outlineColour_ = outlineColour;
+	position = position_;
+	size = size_;
+	fillColour = fillColour_;
+	outlineColour = outlineColour_;
 	//create button rects
-	Button = constructRectangle(midPosX, midPosY, sizeX - 10, sizeY - 10, fillColour);
-	ButtonOutline = constructRectangle(midPosX, midPosY, sizeX, sizeY, outlineColour);
+	Button = constructRectangle(position_, size_,fillColour,5.0f,outlineColour_);
 
 	//set up text on the button
-	font_.loadFromFile("font/arial.ttf");
-	text = sf::Text(string, font_);
-	text.setFillColor(sf::Color(255 - fillColour.r, 255 - fillColour.g, 255 - fillColour.b, fillColour.a));
-	text.setCharacterSize(fontSize);
-	text.setPosition(midPosX - text.getLocalBounds().width / 2, midPosY - text.getLocalBounds().height);
+	text = constructText(position_,fontSize,string,font_, sf::Color(255 - fillColour.r, 255 - fillColour.g, 255 - fillColour.b, fillColour.a));
+
 }
 
-void Button::setColors(sf::Color fillColour, sf::Color outlineColour, bool reset) {
+void Button::setColors(sf::Color fillColour_, bool reset) {
 	if (reset) {
 		Button.setFillColor(fillColour_);
-		ButtonOutline.setFillColor(outlineColour_);
 		return;
 	}
 	fillColour_ = fillColour;
-	outlineColour_ = outlineColour;
 	Button.setFillColor(fillColour);
-	ButtonOutline.setFillColor(outlineColour);
 }
 
 
 void Button::render(sf::RenderWindow* window_) {
-	window_->draw(ButtonOutline);
 	window_->draw(Button);
 	window_->draw(text);
 }
 
 void Button::update(Input* input_) {
 	//check if the mouse is hovering over it
-	if (input_->getMouseX() < ButtonOutline.getPosition().x + sizeX && input_->getMouseX() > ButtonOutline.getPosition().x && input_->getMouseY() < ButtonOutline.getPosition().y + sizeY && input_->getMouseY() > ButtonOutline.getPosition().y) {
+	if (input_->getMouseX() < Button.getPosition().x + size.x && input_->getMouseX() > Button.getPosition().x && input_->getMouseY() < Button.getPosition().y + size.y && input_->getMouseY() > Button.getPosition().y) {
 		if (!hovered) {//apply gray filter to indicate it's hovered over
-			Button.setFillColor(sf::Color(fillColour_.r / 2, fillColour_.g / 2, fillColour_.b / 2, fillColour_.a));
+			Button.setFillColor(sf::Color(fillColour.r / 2, fillColour.g / 2, fillColour.b / 2, fillColour.a));
 			hovered = true;
 		}
 		if (input_->isMouseLDown()) {//button is pressed
@@ -59,7 +50,7 @@ void Button::update(Input* input_) {
 		}
 		if (hovered) {
 			hovered = false;
-			Button.setFillColor(fillColour_);
+			Button.setFillColor(fillColour);
 		}
 	}
 }
@@ -70,19 +61,18 @@ void Button::update(Input* input_) {
 //clear text field
 void TextField::clearTextField(bool wasWrong) {
 	if (wasWrong) {
-		textField.setColors(sf::Color::Red, textField.outlineColour_);
+		textField.setColors(sf::Color::Red);
 	}
 	else {
-		textField.setColors(sf::Color::White, sf::Color::White, true);
+		textField.setColors(sf::Color::White, true);
 	}
 	shown_string = "";
 	textField.setText(shown_string);
 }
 
 //basic setup
-void TextField::setup(int midPosX_, int midPosY_, int sizeX_, int sizeY_, int fontSize, bool onlyInts, sf::Color fillColour, sf::Color outlineColor) {
-	textField.setup(midPosX_, midPosY_, sizeX_, sizeY_, "", fontSize, fillColour, outlineColor);
-	textField.setText(shown_string);
+void TextField::setup(sf::Vector2f position_, sf::Vector2f size_, int fontSize, bool onlyInts, sf::Color fillColour, sf::Color outlineColor) {
+	textField.setup(position_,size_, shown_string, fontSize, fillColour, outlineColor);
 	onlyIntsAllowed = onlyInts;
 }
 

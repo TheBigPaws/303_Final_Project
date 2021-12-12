@@ -5,14 +5,14 @@ Player::Player(sf::RenderWindow* window_) {
 	playerColour = sf::Color(rand() % 256, rand() % 256, rand() % 256);
 
 
-	body = constructSphere(0, 0, 30, playerColour, 5, sf::Color::White);
+	body = constructSphere(sf::Vector2f(0, 0), 30, playerColour, 5, sf::Color::White);
 
-	cannon = constructRectangle(0, 0, 80, 20, sf::Color::Black, 3, sf::Color::White);
+	cannon = constructRectangle(sf::Vector2f(0, 0), sf::Vector2f(80, 20), sf::Color::Black, 3, sf::Color::White);
 
 
-	healthNow = constructRectangle(0, 0, 50, 10, sf::Color::Green);
+	healthNow = constructRectangle(sf::Vector2f(0, 0), sf::Vector2f(50, 10), sf::Color::Green);
 
-	healthMax = constructRectangle(0, 0, 50, 10, sf::Color::Red);
+	healthMax = constructRectangle(sf::Vector2f(0, 0), sf::Vector2f(50, 10), sf::Color::Red);
 
 	//not working rn
 	arial_F.loadFromFile("font/arial.ttf");

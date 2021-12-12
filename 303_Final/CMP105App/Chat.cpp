@@ -1,33 +1,37 @@
 #include "Chat.h"
 
+
+void Chat::setup(sf::RenderWindow* window_, Input* input_) {
+	Screens_Base::setup(window_, input_);
+}
+
 //basic game loop oriented functions
-void Chat::setup(int midPosX_, int midPosY_, int sizeX_, int sizeY_) {
-	font_.loadFromFile("font/arial.ttf");
-	chatBG = sf::RectangleShape(sf::Vector2f(sizeX_, sizeY_));
+void Chat::setPosSize(sf::Vector2f position, sf::Vector2f size) {
+	chatBG = sf::RectangleShape(size);
 	chatBG.setFillColor(sf::Color::Black);
-	chatBG.setPosition(midPosX_ - sizeX_ / 2, midPosY_ - sizeY_ / 2);
-	textEntryField.setup(midPosX_, midPosY_ + sizeY_ / 2 - 15, sizeX_, 30, 15, false, sf::Color::Black, sf::Color::White);
+	chatBG.setPosition(position - size / 2.0f);
+	textEntryField.setup(position + sf::Vector2f(0, size.y / 2 - 15), sf::Vector2f(size.x, 30), 15, false, sf::Color::Black, sf::Color::White);
 
 }
 
-void Chat::render(sf::RenderWindow* window_) {
-	window_->draw(chatBG);
-	textEntryField.render(window_);
+void Chat::render() {
+	window->draw(chatBG);
+	textEntryField.render(window);
 	for (int i = bottomChatMsgIndex; i < chatMessages.size(); i++) {
 		if (chatMessages.at(i).getPosition().y > chatBG.getPosition().y && chatMessages.at(i).getPosition().y < chatBG.getPosition().y + chatBG.getSize().y - 30) { //chat is outside the console show range
-			window_->draw(chatMessages.at(i));
+			window->draw(chatMessages.at(i));
 		}
 	}
 
 }
 
-void Chat::update(Input* input_) {
-	textEntryField.update(input_);
+void Chat::update() {
+	textEntryField.update(input);
 
 	if (textEntryField.isSelected()) {
-		if (input_->isKeyDown(sf::Keyboard::Enter)) {
+		if (input->isKeyDown(sf::Keyboard::Enter)) {
 			if (textEntryField.getString() != "") {
-				input_->setKeyUp(sf::Keyboard::Enter);
+				input->setKeyUp(sf::Keyboard::Enter);
 				sent_string = textEntryField.getString();
 				addMessage(sent_string);
 				sentSomething = true;
@@ -54,7 +58,7 @@ void Chat::addMessage(std::string message, sf::Color msgColor, std::string sende
 
 	//set the string with the time stamp
 	std::string textMsg = str + message;
-	sf::Text protot = sf::Text(textMsg, font_, 15);
+	sf::Text protot = sf::Text(textMsg, arialF, 15);
 	protot.setFillColor(msgColor);
 
 	//

@@ -10,13 +10,13 @@ void Lobby::setup(sf::RenderWindow* window_, Input* input_) {
 	rectangles.back().setPosition((float)window->getSize().x  - rectangles.back().getSize().x, window->getSize().y - rectangles.back().getSize().x);
 	rectangles.back().setFillColor(sf::Color(60, 60, 60));
 
-	chat.setup(150, window->getSize().y/3*2,300, window->getSize().y / 3 * 2);
+	chat.setup(window_, input_);
+	chat.setPosSize(sf::Vector2f(150, window->getSize().y / 3 * 2), sf::Vector2f(300, window->getSize().y / 3 * 2));
 
 	gameTimer = sf::Text("Start in 30.0 seconds",arialF,25);
 	gameTimer.setPosition(window->getSize().x / 2 - gameTimer.getLocalBounds().width / 2, 20);
 
-	startNow.setup(window->getSize().x / 2 - 105, gameTimer.getLocalBounds().height + 80, 200, 50, "Start Now!",20);
-	startCountDown.setup(window->getSize().x / 2 + 105, startNow.midPosY, 200, 50, "Allow CD", 20, sf::Color::Green);
+
 }
 
 
@@ -52,10 +52,10 @@ void Lobby::addPeer(std::string name, std::string IP_, std::string listPort) {
 
 	graphicPeer protot;
 
-	protot.createCircle(posX, posY, 20, name, IP_, listPort, &arialF);
+	protot.createCircle(sf::Vector2f(posX, posY), 20, name, IP_, listPort, &arialF);
 
 	if (peersInLob.size() == 0) {//THE FIRST ADDED WILL ALWAYS BE USER'S INFO
-		protot.createCircle(rectangles.at(0).getPosition().x + rectangles.at(0).getSize().x/2, rectangles.at(0).getPosition().y + rectangles.at(0).getSize().y / 2, 35, name, IP_, listPort, &arialF);
+		protot.createCircle(sf::Vector2f(rectangles.at(0).getPosition().x + rectangles.at(0).getSize().x/2, rectangles.at(0).getPosition().y + rectangles.at(0).getSize().y / 2), 35, name, IP_, listPort, &arialF);
 		protot.circle_.setFillColor(sf::Color::White);
 	}
 	else {
@@ -101,7 +101,7 @@ void Lobby::render() {
 		window->draw(texts.at(i));
 	}
 
-	chat.render(window);
+	chat.render();
 
 	for (int i = 0; i < peersInLob.size(); i++) {
 		window->draw(peersInLob.at(i).circleOutline_);
@@ -111,49 +111,28 @@ void Lobby::render() {
 		window->draw(peersInLob.at(i).Port);
 	}
 	
-	startCountDown.render(window);
-	startNow.render(window);
+
 	window->draw(gameTimer);
 }
 
 
 void Lobby::update(float dt) {
-	chat.update(input);
-	startNow.update(input);
-	startCountDown.update(input);
+	chat.update();
+
 	if (countDownTimer <= 0.0f) {
 		startGame = true;
 	}
 	if (displayedPeerNr() >= 1) {
-		if (startNow.isPressed()) {
-			countDownTimer = 0.0f;
-		}
-		if (startCountDown.fillColour_ == sf::Color::Green) {
-			countDownTimer -= dt;
+		countDownTimer -= dt;
 
-			
-
-			std::string timeWText = "Start in ";
-			timeWText += std::to_string(countDownTimer);
-			timeWText += " seconds";
-			gameTimer.setString(timeWText);
-			gameTimer.setPosition(window->getSize().x / 2 - gameTimer.getLocalBounds().width / 2, gameTimer.getPosition().y);
-		}
+		std::string timeWText = "Start in ";
+		timeWText += std::to_string(countDownTimer);
+		timeWText += " seconds";
+		gameTimer.setString(timeWText);
+		gameTimer.setPosition(window->getSize().x / 2 - gameTimer.getLocalBounds().width / 2, gameTimer.getPosition().y);
 	}
 
-	if (startCountDown.isPressed()) {
-		if (!buttonPressed) {
-			buttonPressed = true;
-			if (startCountDown.fillColour_ == sf::Color::Green) {
-				startCountDown.fillColour_ = sf::Color::Red;
-			}
-			else {
-				startCountDown.fillColour_ = sf::Color::Green;
-			}
-		}
-	}
-	else { buttonPressed = false; }
-
+	//buttonPressed = false;
 	
 }
 

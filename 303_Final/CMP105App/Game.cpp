@@ -67,11 +67,11 @@ void Game::setup(sf::RenderWindow* window_, Input* input_) {
 
 
 	for (int x = -10; x <= 10; x++) {
-		gameShapes.push_back(constructRectangle(x * tileSize, 0, 2, 20 * tileSize, sf::Color::Black));
+		gameShapes.push_back(constructRectangle(sf::Vector2f(x * tileSize, 0), sf::Vector2f(2, 20 * tileSize), sf::Color::Black));
 
 	}
 	for (int y = -10; y <= 10; y++) {
-		gameShapes.push_back(constructRectangle(0, y * tileSize, 20 * tileSize, 2, sf::Color::Black));
+		gameShapes.push_back(constructRectangle(sf::Vector2f(0, y * tileSize), sf::Vector2f(20 * tileSize, 2), sf::Color::Black));
 	}
 
 
