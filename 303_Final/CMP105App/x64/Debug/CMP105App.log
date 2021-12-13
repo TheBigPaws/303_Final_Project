@@ -1,12 +1,12 @@
 ﻿  Player.cpp
 D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Player.cpp(23,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Player.cpp(60,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Player.cpp(73,115): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Player.cpp(74,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Player.cpp(101,115): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Player.cpp(73,64): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Player.cpp(101,64): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float

@@ -1,6 +1,6 @@
 #include "Player.h"
 
-Player::Player(sf::RenderWindow* window_) {
+Player::Player(sf::RenderWindow* window_,sf::Font * font_) {
 	window = window_;
 	playerColour = sf::Color(rand() % 256, rand() % 256, rand() % 256);
 
@@ -15,10 +15,10 @@ Player::Player(sf::RenderWindow* window_) {
 	healthMax = constructRectangle(sf::Vector2f(0, 0), sf::Vector2f(50, 10), sf::Color::Red);
 
 	//not working rn
-	arial_F.loadFromFile("font/arial.ttf");
-	name_t = sf::Text("aaa", arial_F,20);
+	//arial_F.loadFromFile("font/arial.ttf");
+	name_t = sf::Text("", *font_,20);
 	name_t.setFillColor(sf::Color::Black);
-	name_t.setOutlineThickness(1);
+	name_t.setOutlineThickness(3);
 	name_t.setOutlineColor(sf::Color::White);
 	srand(time(NULL));
 
@@ -36,11 +36,25 @@ void Player::setupInput(Input* input_) {
 
 void Player::updatePositions() {
 
+	//fix for out of game movements (real or predicted)
+	if (currentPos.y < -999) {
+		currentPos.y = -999;
+	}
+	if (currentPos.y > 999) {
+		currentPos.y = 999;
+	}
+	if (currentPos.x < -999) {
+		currentPos.x = -999;
+	}
+	if (currentPos.x > 999) {
+		currentPos.x = 999;
+	}
+
 	body.setPosition(currentPos.x - body.getRadius(), currentPos.y - body.getRadius());
 	cannon.setPosition(currentPos.x, currentPos.y - cannon.getSize().y / 2);
 	healthNow.setPosition(currentPos.x - 25, currentPos.y + 30);
 	healthMax.setPosition(currentPos.x - 25, currentPos.y + 30);
-	name_t.setPosition(currentPos.x, currentPos.y);
+	name_t.setPosition(currentPos.x - name_t.getGlobalBounds().width/2, currentPos.y- body.getRadius() - 20);
 }
 
 void Player::update(float dt) {
@@ -69,6 +83,20 @@ void Player::update(float dt) {
 
 void Player::handleInput(float dt) {
 	
+	if (!isCapturing) {
+		if (input->isKeyDown(sf::Keyboard::D)) { //move left
+			currentPos.x += dt * playerSpeed;
+		}
+		if (input->isKeyDown(sf::Keyboard::A)) {//move right
+			currentPos.x -= dt * playerSpeed;
+		}
+		if (input->isKeyDown(sf::Keyboard::W)) {//move up
+			currentPos.y -= dt * playerSpeed;
+		}
+		if (input->isKeyDown(sf::Keyboard::S)) {//move down
+			currentPos.y += dt * playerSpeed;
+		}
+	}
 	//create normalised look vector and save it
 	sf::Vector2f playerToCursor = sf::Vector2f(input->getMouseX() - (int)window->getSize().x / 2, input->getMouseY() - (int)window->getSize().y / 2);
 	float magnitude = sqrt(playerToCursor.x * playerToCursor.x + playerToCursor.y * playerToCursor.y);
@@ -96,7 +124,7 @@ void Player::interpolate(float dt) {
 	if (receivedPos == receivedPos2) {//if arrived to standing in place
 		predictedDirection = sf::Vector2f(0, 0);
 		if (dir_magnitude > 0.4f) {
-			currentPos += dir * dt;
+			currentPos += dir / dir_magnitude * playerSpeed * dt;
 		}
 		else {
 			currentPos = receivedPos;

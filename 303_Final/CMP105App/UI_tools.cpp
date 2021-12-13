@@ -13,7 +13,8 @@ void Button::setup(sf::Vector2f position_, sf::Vector2f size_, sf::String string
 	Button = constructRectangle(position_, size_,fillColour,5.0f,outlineColour_);
 
 	//set up text on the button
-	text = constructText(position_,fontSize,string,font_, sf::Color(255 - fillColour.r, 255 - fillColour.g, 255 - fillColour.b, fillColour.a));
+	text = sf::Text(string, font_);
+	setTextVal(&text, position_, fontSize, sf::Color(255 - fillColour.r, 255 - fillColour.g, 255 - fillColour.b, fillColour.a));
 
 }
 

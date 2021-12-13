@@ -25,14 +25,32 @@ static sf::CircleShape constructSphere(sf::Vector2f position, float radius, sf::
 }
 
 //more compact function to create and return Text
-static sf::Text constructText(sf::Vector2f position, int characterSize,std::string text, sf::Font font, sf::Color fillColour = sf::Color::Black, float outlineThickness = 0.0f, sf::Color outlineColour = sf::Color::White) {
+static sf::Text constructText(sf::Vector2f position,int characterSize,std::string text, sf::Font font, sf::Color fillColour = sf::Color::Black, float outlineThickness = 0.0f, sf::Color outlineColour = sf::Color::White) {
 	
-	sf::Text returnText = sf::Text(text,font,characterSize);
+	sf::Font fontana;
+	fontana.loadFromFile("font/arial.ttf");
+
+
+	sf::Text returnText = sf::Text(text,fontana);
 
 	returnText.setFillColor(fillColour);
 	returnText.setOutlineColor(outlineColour);
 	returnText.setOutlineThickness(outlineThickness);
+	returnText.setCharacterSize(characterSize);
 	returnText.setPosition(sf::Vector2f(position.x - returnText.getLocalBounds().width/2, position.y - returnText.getLocalBounds().height / 2));
 
 	return returnText;
+}
+
+//more compact function to create and return Text
+static void setTextVal(sf::Text * TextToEdit,sf::Vector2f position, int characterSize, sf::Color fillColour = sf::Color::Black, float outlineThickness = 0.0f, sf::Color outlineColour = sf::Color::White) {
+
+
+
+	TextToEdit->setFillColor(fillColour);
+	TextToEdit->setOutlineColor(outlineColour);
+	TextToEdit->setOutlineThickness(outlineThickness);
+	TextToEdit->setCharacterSize(characterSize);
+	TextToEdit->setPosition(sf::Vector2f(position.x - TextToEdit->getLocalBounds().width / 2, position.y - TextToEdit->getLocalBounds().height / 2));
+
 }

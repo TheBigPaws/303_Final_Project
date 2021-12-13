@@ -34,7 +34,7 @@ void Game::updateEnemyVals(std::string name, playerPosLookDir playerVals) {
 }
 
 void Game::addEnemy(std::string name) {
-	Player protot = Player(window);
+	Player protot = Player(window,&arialF);
 	protot.name = name;
 	protot.name_t.setString(name);
 	protot.currentPos = sf::Vector2f(-17000,-17000);
@@ -47,7 +47,7 @@ void Game::setup(sf::RenderWindow* window_, Input* input_) {
 	// sets up window, input and font
 	Screens_Base::setup(window_, input_);
 
-	player = Player(window);
+	player = Player(window,&arialF);
 	player.setupInput(input);
 	//set up gameWorld
 	std::cout << "playerPos is " << player.currentPos.x << " " << player.currentPos.y << std::endl;
@@ -160,34 +160,7 @@ void Game::handleGameInput(float dt) {
 		shotInfo.a = (int)myBullets.back().id;
 		importantEvents.push(shotInfo);
 	}
-	if (!player.isCapturing) { //only move when not capturing
-		if (input->isKeyDown(sf::Keyboard::D)) { //move left
-			player.currentPos.x += dt * player.playerSpeed;
-			if (player.currentPos.x > 999) {
-				player.currentPos.x = 999;
-			}
-		}
-		if (input->isKeyDown(sf::Keyboard::A)) {//move right
-			player.currentPos.x -= dt * player.playerSpeed;
-			if (player.currentPos.x < -999) {
-				player.currentPos.x = -999;
-			}
-		}
-		if (input->isKeyDown(sf::Keyboard::W)) {//move up
-			player.currentPos.y -= dt * player.playerSpeed;
-			if (player.currentPos.y < -999) {
-				player.currentPos.y = -999;
-			}
-		}
-		if (input->isKeyDown(sf::Keyboard::S)) {//move down
-			player.currentPos.y += dt * player.playerSpeed;
-			if (player.currentPos.y > 999) {
-				player.currentPos.y = 999;
-			}
-		}
-
-	}
-	else {
+	if (player.isCapturing) { //only move when not capturing
 		if (player.captureTime <= 0) {
 			int idxOfTileOn[2];
 			idxOfTileOn[0] = player.currentPos.x / 100 + 10;

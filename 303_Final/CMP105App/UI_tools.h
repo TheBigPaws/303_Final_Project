@@ -66,13 +66,21 @@ struct graphicPeer {
 		position = position_;
 		radius = radius_;
 
-		IP = constructText(position, 15, IpAddress, *font, sf::Color::Black, 2.0);
 
-		Name = constructText(position - sf::Vector2f(0, IP.getLocalBounds().height + 5), 20, name, *font, sf::Color::Black, 2.0);
 
-		Port = constructText(position + sf::Vector2f(0, IP.getLocalBounds().height + 5), 15, ListenerPort, *font, sf::Color::Black, 2.0);
+		//IP = constructText(position, 15, IpAddress, *font, sf::Color::Black, 2.0);
+		IP = sf::Text(IpAddress, *font,15);
+		setTextVal(&IP, position,15, sf::Color::Black, 2.0f);
 
-		circle_ = constructSphere(position_, radius_, sf::Color(50 + rand() % 200, 50 + rand() % 200, 50 + rand() % 200, 255), 5.0f, sf::Color::White);
+		//Name = constructText(position - sf::Vector2f(0, IP.getLocalBounds().height + 5), 20, name, *font, sf::Color::Black, 2.0);
+		Name = sf::Text(name,*font,20);
+		setTextVal(&Name, position - sf::Vector2f(0, IP.getLocalBounds().height + 5), 20 , sf::Color::Black, 2.0f);
+
+		//Port = constructText(position + sf::Vector2f(0, IP.getLocalBounds().height + 5), 15, ListenerPort, *font, sf::Color::Black, 2.0);
+		Port = sf::Text(ListenerPort, *font, 15);
+		setTextVal(&Port, position + sf::Vector2f(0, IP.getLocalBounds().height + 5), 15, sf::Color::Black, 2.0f);
+
+		circle_ = constructSphere(position, radius_, sf::Color(50 + rand() % 200, 50 + rand() % 200, 50 + rand() % 200, 255), 5.0f, sf::Color::White);
 	}
 };
 
@@ -85,7 +93,8 @@ struct graphicPeerConnectLine {
 		peer2_name = peer2.Name.getString();
 
 		sf::Vector2f protToPeer = peer2.position - peer1.position;
-		line = constructRectangle(peer1.position, sf::Vector2f(sqrt(protToPeer.x * protToPeer.x + protToPeer.y * protToPeer.y), 5), sf::Color(50 + rand() % 200, 50 + rand() % 200, 50 + rand() % 200, 255), 1.0f);
+		line = sf::RectangleShape(sf::Vector2f(sqrt(protToPeer.x * protToPeer.x + protToPeer.y * protToPeer.y), 5));
+		line.setPosition(peer1.position.x, peer1.position.y);
 		line.rotate(atan(protToPeer.y / protToPeer.x) * 57.32);
 		if (protToPeer.x < 0) {
 			line.rotate(180);

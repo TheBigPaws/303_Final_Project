@@ -4,7 +4,7 @@
 class Player
 {
 public:
-	std::string name = "aa";
+	std::string name = "";
 	sf::Font arial_F;
 	sf::Text name_t;
 	sf::CircleShape body;
@@ -23,12 +23,12 @@ public:
 	sf::Vector2f currentPos, receivedPos, receivedPos2, currentLookVector,receivedLookVector,predictedDirection;
 
 	Player() {};
-	Player(sf::RenderWindow* window_);
+	Player(sf::RenderWindow* window_, sf::Font* font_);
 	void setupInput(Input* input_);
 	void render() {
 		window->draw(body);
 		window->draw(cannon);
-		//window->draw(name_t);
+		window->draw(name_t);
 		if (health != 5) {
 			window->draw(healthMax);
 			window->draw(healthNow);

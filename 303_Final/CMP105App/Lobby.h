@@ -12,7 +12,7 @@ private:
 	std::vector<sf::RectangleShape> rectangles;
 	std::vector<sf::Text> texts;
 	sf::Text gameTimer;
-	float countDownTimer = 30.0f;
+	float countDownTimer = 10.0f;
 	bool buttonPressed = false;
 public:
 	Chat chat;
