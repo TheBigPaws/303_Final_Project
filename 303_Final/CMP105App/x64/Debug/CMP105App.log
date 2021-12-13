@@ -1,12 +1,76 @@
-﻿  Player.cpp
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Player.cpp(23,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Player.cpp(74,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Player.cpp(101,115): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+﻿  Lobby.cpp
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\UI_tools.h(99,49): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.h(27,24): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(9,98): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(9,74): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(14,60): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(14,108): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(19,78): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(19,53): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(41,48): warning C4244: '=': conversion from 'T' to 'int', possible loss of data
           with
           [
               T=float
           ]
-D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Player.cpp(101,64): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(42,48): warning C4244: '=': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(55,41): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Users\User\Documents\GitHub\303_Final_Project\303_Final\CMP105App\Lobby.cpp(55,35): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float

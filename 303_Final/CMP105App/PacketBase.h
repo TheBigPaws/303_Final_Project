@@ -6,7 +6,7 @@
 #include <queue>
 #include <chrono>
 
-enum Data_Header { ntn, CHAT_MESSAGE, NW_INFO, PLAYER_POS_ANGLE, BULLET_SHOT, AREA_CAPTURED, PLAYER_HIT,ADD_ME_TO_GAME };
+enum Data_Header { ntn, CHAT_MESSAGE, NW_INFO, PLAYER_POS_ANGLE, BULLET_SHOT, AREA_CAPTURED, PLAYER_HIT,ADD_ME_TO_GAME, LOBBY_READY_STATUS };
 
 struct header {
 	std::string senderName;

@@ -16,7 +16,7 @@ void Lobby::setup(sf::RenderWindow* window_, Input* input_) {
 	gameTimer = sf::Text("Start in 30.0 seconds",arialF,25);
 	gameTimer.setPosition(window->getSize().x / 2 - gameTimer.getLocalBounds().width / 2, 20);
 
-
+	readyButton.setup(sf::Vector2f(window->getSize().x / 2, window->getSize().y / 2), sf::Vector2f(300, 100), "Ready!", 20, sf::Color::Red, sf::Color::White);
 }
 
 
@@ -79,6 +79,7 @@ void Lobby::addPeer(std::string name, std::string IP_, std::string listPort) {
 		//}
 		graphicPeerConnectLine a;
 		a.createConnectLine(protot, peersInLob.at(i));
+		a.line.setFillColor(sf::Color::Red);
 		peersConnectLines.push_back(a);
 	}
 	peersInLob.push_back(protot);
@@ -111,6 +112,7 @@ void Lobby::render() {
 		window->draw(peersInLob.at(i).Port);
 	}
 	
+	readyButton.render(window);
 
 	window->draw(gameTimer);
 }
@@ -118,6 +120,7 @@ void Lobby::render() {
 
 void Lobby::update(float dt) {
 	chat.update();
+	readyButton.update(input);
 
 	if (countDownTimer <= 0.0f) {
 		startGame = true;
@@ -132,8 +135,21 @@ void Lobby::update(float dt) {
 		gameTimer.setPosition(window->getSize().x / 2 - gameTimer.getLocalBounds().width / 2, gameTimer.getPosition().y);
 	}
 
-	//buttonPressed = false;
-	
+	if (readyButton.isPressed() && readyButton.fillColour == sf::Color::Red) {
+
+		input->setMouseLDown(false);
+		readyButton.setColors(sf::Color::Green);
+		std::cout << "clck";
+		setReady(peersInLob.front().Name.getString(),true);
+	}
+	else if (readyButton.isPressed() && readyButton.fillColour == sf::Color::Green) {
+		input->setMouseLDown(false);
+		std::cout << "setback";
+
+		readyButton.setColors(sf::Color::Red);
+		setReady(peersInLob.front().Name.getString(), false);
+
+	}
 }
 
 void Lobby::disconnectPlayer(std::string name) {
@@ -150,4 +166,54 @@ void Lobby::disconnectPlayer(std::string name) {
 			i--;
 		}
 	}
+}
+
+void Lobby::setReady(std::string name,bool ready) {
+
+	for (int i = 0; i < peersInLob.size(); i++) {
+		if (peersInLob.at(i).Name.getString() == name) {
+			peersInLob.at(i).ready = ready;
+			break;
+		}
+	}
+
+	if (ready) {
+		for (int i = 0; i < peersConnectLines.size(); i++) {
+			if (peersConnectLines.at(i).peer1_name == name || peersConnectLines.at(i).peer2_name == name) {
+				if (peersConnectLines.at(i).line.getFillColor() == sf::Color::Red) {//set it to one way ready
+					peersConnectLines.at(i).line.setFillColor(sf::Color(0, 170, 0, 255));
+				}
+				else if (peersConnectLines.at(i).line.getFillColor() == sf::Color(0, 170, 0, 255)) {
+					peersConnectLines.at(i).line.setFillColor(sf::Color::Green);
+				}
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < peersConnectLines.size(); i++) {
+			if (peersConnectLines.at(i).peer1_name == name || peersConnectLines.at(i).peer2_name == name) {
+				if (peersConnectLines.at(i).line.getFillColor() == sf::Color::Green) {//set it to one way ready
+					peersConnectLines.at(i).line.setFillColor(sf::Color(0, 170, 0, 255));
+				}
+				else if (peersConnectLines.at(i).line.getFillColor() == sf::Color(0, 170, 0, 255)) {
+					peersConnectLines.at(i).line.setFillColor(sf::Color::Red);
+				}
+			}
+		}
+	}
+	checkReadiness();
+}
+
+
+void Lobby::checkReadiness() {
+	bool readyCheck = true;
+
+	for (int i = 0; i < peersInLob.size(); i++) {
+		if (!peersInLob.at(i).ready) {
+			readyCheck = false;
+			break;
+		}
+	}
+
+	allReady = readyCheck;
 }

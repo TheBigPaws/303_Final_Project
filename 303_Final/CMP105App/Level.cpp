@@ -122,6 +122,7 @@ void Level::update(float dt)
 	nwShareTimer -= dt;
 
 	if (nwShareTimer <= 0.0f) {
+		bool imReady = false;
 		nwShareTimer = 0.1f;
 		sf::Packet packet;
 		header hdr_;
@@ -129,9 +130,12 @@ void Level::update(float dt)
 		hdr_.senderName = networkModule.getMyInfo()->name;
 		switch (gameState) {
 		case LOBBY:
-			hdr_.information_amount = 0;
-			hdr_.information_type = ntn;
-			packet << hdr_;
+			hdr_.information_amount = 1;
+			hdr_.information_type = LOBBY_READY_STATUS;
+			if (lobby.readyButton.fillColour == sf::Color::Green) {
+				imReady = true;
+			}
+			packet << hdr_ << imReady;
 			networkModule.pushOutPacket_all(packet);
 			networkModule.sendAll_TCP();
 			break;
@@ -238,7 +242,7 @@ void Level::decodePacket(sf::Packet packet) {
 	playerPosLookDir receivedPPLD;
 	sf::Vector2f vector1, vector2;
 	sf::Uint16 a, b;
-
+	bool boolVar;
 	//deal with header here
 
 	header header_;
@@ -288,6 +292,11 @@ void Level::decodePacket(sf::Packet packet) {
 		break;
 
 		default:
+		break;
+
+		case LOBBY_READY_STATUS:
+			packet >> boolVar; //hit player name
+			lobby.setReady(header_.senderName, boolVar);
 		break;
 		}
 	}

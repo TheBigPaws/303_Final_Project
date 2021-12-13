@@ -62,6 +62,7 @@ struct graphicPeer {
 	sf::CircleShape circle_, circleOutline_;
 	sf::Vector2f position;
 	float radius;
+	bool ready = false;
 	void createCircle(sf::Vector2f position_, float radius_, std::string name, std::string IpAddress, std::string ListenerPort, sf::Font* font) {
 		position = position_;
 		radius = radius_;
