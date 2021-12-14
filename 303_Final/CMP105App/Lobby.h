@@ -22,7 +22,7 @@ private:
 	
 	bool allReady = false;
 public:
-	float countDownTimer = 3.0f;
+	float countDownTimer = 10.0f;
 	Button readyButton;
 	Chat chat;
 	bool startGame = false;

@@ -2,8 +2,6 @@
 
 void P2P_Network::setup() {
 	
-	//std::cout << "This device's public IP address is " << sf::IpAddress::getPublicAddress() << std::endl;
-
 
 	// setup listener to any free port - safer than assigning a constant one
 	if (mylistener.listen(sf::Socket::AnyPort) != sf::Socket::Done)
@@ -89,6 +87,7 @@ bool P2P_Network::accept_TCP_new() {
 			std::cout << " Unsuccesfull connect from ip " << peers.back()->IpAddress << " due to same name alrready used." << std::endl;
 
 			//delete connection to that client
+			delete(peers.back());
 			peers.pop_back();
 			//set up another slot for a potential peer
 			peers.push_back(new Peer);
@@ -150,7 +149,9 @@ connectResult P2P_Network::connect_TCP_to(sf::IpAddress hostIP, unsigned short p
 			std::cout << "Name was already used" << std::endl;
 
 			//delete connection to that client
+			delete(peers.back());
 			peers.pop_back();
+
 			//set up another slot for a potential peer
 			peers.push_back(new Peer);
 			return NAME_ALREADY_USED; //we weren't succesful in connecting
@@ -189,17 +190,22 @@ void P2P_Network::sendAll_TCP() {
 				keep_sending = true;//keep sending
 				if (peers.at(i)->socket.send(peers.at(i)->outgoingPackets.front()) != sf::Socket::Done)
 				{
-					//if we couldn't send, means the connection was lost
-					std::cout << "error in send to client" << i + 1 << std::endl;
 					
+					//if we couldn't send, increment fail count. This way we won't disconnect when one random send fails				
+					peers.at(i)->failedSends++;
+
 					//delete connection with that client
-					someoneDisconnected = true;
-					disconnectedName = peers.at(i)->name;
-					peers.erase(peers.begin() + i);
-					break;
+					if (peers.at(i)->failedSends == 3) {
+						someoneDisconnected = true;
+						disconnectedName = peers.at(i)->name;
+						delete(peers.at(i));
+						peers.erase(peers.begin() + i);
+						break;
+					}
 				}
 				else {
 					peers.at(i)->outgoingPackets.pop();
+					peers.at(i)->failedSends = 0;
 				}
 			}
 		}

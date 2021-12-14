@@ -8,7 +8,7 @@ void MainMenu::setup(sf::RenderWindow* window_, Input* input_){
 
 	//set up title text
 	gameTitletxt = sf::Text("Tank Capture Game",arialF);
-	setTextVal(&gameTitletxt, sf::Vector2f(window->getSize().x / 2 - gameTitletxt.getLocalBounds().width / 2, 50), 30,sf::Color::Black,5);
+	setTextVal(&gameTitletxt, sf::Vector2f(window->getSize().x / 2, 50), 30,sf::Color::Black,5);
 	gameTitletxt.setStyle(sf::Text::Bold);
 
 	//set up connect prompt UI

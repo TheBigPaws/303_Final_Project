@@ -138,7 +138,7 @@ void Lobby::update(float dt) {
 			startGame = true;
 		}
 		std::string timeWText = "Start in ";
-		timeWText += std::to_string(countDownTimer);
+		timeWText += std::to_string(int(countDownTimer));
 		timeWText += " seconds";
 		gameTimer.setString(timeWText);
 		gameTimer.setPosition(window->getSize().x / 2 - gameTimer.getLocalBounds().width / 2, gameTimer.getPosition().y);

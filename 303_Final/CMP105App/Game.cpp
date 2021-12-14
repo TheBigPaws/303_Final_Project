@@ -131,11 +131,13 @@ void Game::handleGameInput(float dt) {
 
 		if (player.captureTime <= 0) { //if we finished capturing
 			int idxOfTileOn[2];
-			idxOfTileOn[0] = player.currentPos.x / 100 + 5;
-			idxOfTileOn[1] = player.currentPos.y / 100 + 5;
+			idxOfTileOn[0] = player.currentPos.x / 100 + 10;
+			idxOfTileOn[1] = player.currentPos.y / 100 + 10;
 
 			gameField[idxOfTileOn[1]][idxOfTileOn[0]].setFillColor(player.playerColour); //paint the tile we are standing on
 			player.isCapturing = false;
+			std::cout << "captured";
+
 
 			//create an event reference about  it
 			eventInfo captureInfo;

@@ -20,6 +20,8 @@ struct Peer {
 	//queues of packets (will be treated as tasks)
 	std::queue<sf::Packet> receivedPackets;
 	std::queue<sf::Packet> outgoingPackets;
+
+	int failedSends = 0;
 };
 
 //enum describing what information is going to be in the packet

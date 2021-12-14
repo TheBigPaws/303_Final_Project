@@ -111,11 +111,10 @@ void TextField::update(Input* input_) {
 	}
 
 	if (selected) {
-		//keyPressed = false;
+		
 		for (int i = 0; i <= 50; i++) {//look if the user pressed any numbers
 			if (input_->isKeyDown(i)) {
 				input_->setKeyUp(i);
-				//keyPressed = true;
 				char charToAdd;
 				if (i <= 25 && !onlyIntsAllowed) {
 					charToAdd = 65 + i; // add chars
@@ -136,6 +135,12 @@ void TextField::update(Input* input_) {
 				textField.textResetPos();
 				break;
 			}
+		}
+		if (input_->isKeyDown(sf::Keyboard::Space)) { //spaces
+			input_->setKeyUp(sf::Keyboard::Space);
+			shown_string += " ";
+			textField.setText(shown_string, sf::Color::White);
+			textField.textResetPos();
 		}
 		if (input_->isKeyDown(sf::Keyboard::BackSpace)) { //cleear text field of selected text
 			input_->setKeyUp(sf::Keyboard::BackSpace);

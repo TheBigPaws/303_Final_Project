@@ -115,6 +115,7 @@ void Level::update(float dt)
 		if (networkModule.someoneDisconnected) {
 			networkModule.someoneDisconnected = false;
 			game.disconnectPlayer(networkModule.disconnectedName);
+
 		}
 
 		game.update(dt);
