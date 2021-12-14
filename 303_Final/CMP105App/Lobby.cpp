@@ -13,10 +13,10 @@ void Lobby::setup(sf::RenderWindow* window_, Input* input_) {
 	chat.setup(window_, input_);
 	chat.setPosSize(sf::Vector2f(150, window->getSize().y / 3 * 2), sf::Vector2f(300, window->getSize().y / 3 * 2));
 
-	gameTimer = sf::Text("Start in 30.0 seconds",arialF,25);
+	gameTimer = sf::Text("Start in 10.0 seconds",arialF,25);
 	gameTimer.setPosition(window->getSize().x / 2 - gameTimer.getLocalBounds().width / 2, 20);
 
-	readyButton.setup(sf::Vector2f(window->getSize().x / 2, window->getSize().y / 2), sf::Vector2f(300, 100), "Ready!", 20, sf::Color::Red, sf::Color::White);
+	readyButton.setup(sf::Vector2f(window->getSize().x / 2, gameTimer.getPosition().y + 100), sf::Vector2f(300, 100), "Not Ready!", 40, sf::Color::Red, sf::Color::White);
 }
 
 
@@ -51,21 +51,30 @@ void Lobby::addPeer(std::string name, std::string IP_, std::string listPort) {
 	}
 
 	graphicPeer protot;
-
 	protot.createCircle(sf::Vector2f(posX, posY), 20, name, IP_, listPort, &arialF);
 
+	//first added to lob display, i.e. me
 	if (peersInLob.size() == 0) {//THE FIRST ADDED WILL ALWAYS BE USER'S INFO
 		protot.createCircle(sf::Vector2f(rectangles.at(0).getPosition().x + rectangles.at(0).getSize().x/2, rectangles.at(0).getPosition().y + rectangles.at(0).getSize().y / 2), 35, name, IP_, listPort, &arialF);
 		protot.circle_.setFillColor(sf::Color::White);
-	}
+
+	}//add enemy peer
 	else {
+
+		//add ready message
+		std::string readyString = name + " is not ready.";
+		sf::Text rdyTextProt = sf::Text(readyString, arialF, 20);
+		setTextVal(&rdyTextProt, sf::Vector2f(window->getSize().x / 2, 250 + playerReadinessText.size()*50), 20, sf::Color::Red, 3.0);
+		playerReadinessText.push_back(rdyTextProt);
+
+		//add chat message about join
 		std::string join_msg = "Peer ";
 		join_msg = join_msg + protot.Name.getString() + " has joined the lobby.";
-
 		chat.addMessage(join_msg, sf::Color::Yellow, "LOBBY");
 	}
 
-	for (int i = 0; i < peersInLob.size(); i++) {//ADD ALL THE CONNECTING LINES
+	//ADD ALL THE CONNECTING LINES
+	for (int i = 0; i < peersInLob.size(); i++) {
 		//sf::Vector2f protToPeer = sf::Vector2f(peersInLob.at(i).positionX - posX, peersInLob.at(i).positionY - posY);
 		//rectangles.push_back(sf::RectangleShape(sf::Vector2f(sqrt(protToPeer.x * protToPeer.x + protToPeer.y * protToPeer.y), 5)));
 		//rectangles.back().setPosition(posX,posY);
@@ -79,13 +88,10 @@ void Lobby::addPeer(std::string name, std::string IP_, std::string listPort) {
 		//}
 		graphicPeerConnectLine a;
 		a.createConnectLine(protot, peersInLob.at(i));
-		a.line.setFillColor(sf::Color::Red);
 		peersConnectLines.push_back(a);
 	}
 	peersInLob.push_back(protot);
-
-	
-
+	checkReadiness();
 }
 
 
@@ -112,20 +118,25 @@ void Lobby::render() {
 		window->draw(peersInLob.at(i).Port);
 	}
 	
+	for (int i = 0; i < playerReadinessText.size(); i++) {
+		window->draw(playerReadinessText.at(i));
+	}
+
 	readyButton.render(window);
 
-	window->draw(gameTimer);
+	if (countDownTimer != 10.0f) {
+		window->draw(gameTimer);
+	}
 }
 
 
 void Lobby::update(float dt) {
 	chat.update();
-	readyButton.update(input);
 
 	if (countDownTimer <= 0.0f) {
 		startGame = true;
 	}
-	if (displayedPeerNr() >= 1) {
+	if (allReady && peersInLob.size() > 1) {
 		countDownTimer -= dt;
 
 		std::string timeWText = "Start in ";
@@ -135,26 +146,29 @@ void Lobby::update(float dt) {
 		gameTimer.setPosition(window->getSize().x / 2 - gameTimer.getLocalBounds().width / 2, gameTimer.getPosition().y);
 	}
 
-	if (readyButton.isPressed() && readyButton.fillColour == sf::Color::Red) {
-
+	if (readyButton.isPressed()) {
 		input->setMouseLDown(false);
-		readyButton.setColors(sf::Color::Green);
-		std::cout << "clck";
-		setReady(peersInLob.front().Name.getString(),true);
+		if (readyButton.fillColour == sf::Color::Red) {
+			peersInLob.front().ready = true;
+			readyButton.setText("Ready!");
+			readyButton.setColors(sf::Color::Green);
+			
+		}
+		else {
+			peersInLob.front().ready = false;
+			readyButton.setText("Not Ready!");
+			readyButton.setColors(sf::Color::Red);
+		}
+		checkReadiness();
 	}
-	else if (readyButton.isPressed() && readyButton.fillColour == sf::Color::Green) {
-		input->setMouseLDown(false);
-		std::cout << "setback";
+	readyButton.update(input);
 
-		readyButton.setColors(sf::Color::Red);
-		setReady(peersInLob.front().Name.getString(), false);
-
-	}
 }
 
 void Lobby::disconnectPlayer(std::string name) {
 	for (int i = 0; i < peersInLob.size(); i++) {
 		if (peersInLob.at(i).Name.getString() == name) {
+			playerReadinessText.erase(playerReadinessText.begin() + i - 1);
 			peersInLob.erase(peersInLob.begin() + i);
 			break;
 		}
@@ -166,6 +180,12 @@ void Lobby::disconnectPlayer(std::string name) {
 			i--;
 		}
 	}
+
+	//add chat message about join
+	std::string join_msg = "Peer ";
+	join_msg = join_msg + name + " has left the lobby.";
+	chat.addMessage(join_msg, sf::Color::Yellow, "LOBBY");
+
 }
 
 void Lobby::setReady(std::string name,bool ready) {
@@ -173,34 +193,19 @@ void Lobby::setReady(std::string name,bool ready) {
 	for (int i = 0; i < peersInLob.size(); i++) {
 		if (peersInLob.at(i).Name.getString() == name) {
 			peersInLob.at(i).ready = ready;
+			if (ready && playerReadinessText.at(i - 1).getFillColor() == sf::Color::Red){
+				playerReadinessText.at(i - 1).setString(std::string(name + "is ready."));
+				playerReadinessText.at(i - 1).setFillColor(sf::Color::Green);
+			}
+			if (!ready && playerReadinessText.at(i - 1).getFillColor() == sf::Color::Green) {
+				playerReadinessText.at(i - 1).setString(std::string(name + "is not ready."));
+				playerReadinessText.at(i - 1).setFillColor(sf::Color::Red);
+			}
 			break;
 		}
 	}
 
-	if (ready) {
-		for (int i = 0; i < peersConnectLines.size(); i++) {
-			if (peersConnectLines.at(i).peer1_name == name || peersConnectLines.at(i).peer2_name == name) {
-				if (peersConnectLines.at(i).line.getFillColor() == sf::Color::Red) {//set it to one way ready
-					peersConnectLines.at(i).line.setFillColor(sf::Color(0, 170, 0, 255));
-				}
-				else if (peersConnectLines.at(i).line.getFillColor() == sf::Color(0, 170, 0, 255)) {
-					peersConnectLines.at(i).line.setFillColor(sf::Color::Green);
-				}
-			}
-		}
-	}
-	else {
-		for (int i = 0; i < peersConnectLines.size(); i++) {
-			if (peersConnectLines.at(i).peer1_name == name || peersConnectLines.at(i).peer2_name == name) {
-				if (peersConnectLines.at(i).line.getFillColor() == sf::Color::Green) {//set it to one way ready
-					peersConnectLines.at(i).line.setFillColor(sf::Color(0, 170, 0, 255));
-				}
-				else if (peersConnectLines.at(i).line.getFillColor() == sf::Color(0, 170, 0, 255)) {
-					peersConnectLines.at(i).line.setFillColor(sf::Color::Red);
-				}
-			}
-		}
-	}
+
 	checkReadiness();
 }
 

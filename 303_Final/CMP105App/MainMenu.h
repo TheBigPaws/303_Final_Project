@@ -43,6 +43,8 @@ public:
 	void resetInput(bool wasWrong) {
 		IPfield.clearTextField(wasWrong);
 		PortField.clearTextField(wasWrong);
+		enterNameText.setString("Name already used!");
+		enterNameText.setFillColor(sf::Color::Red);
 	}
 
 };

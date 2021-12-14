@@ -11,10 +11,11 @@ private:
 	std::vector<graphicPeerConnectLine> peersConnectLines;
 	std::vector<sf::RectangleShape> rectangles;
 	std::vector<sf::Text> texts;
+	std::vector<sf::Text> playerReadinessText;
 	sf::Text gameTimer;
-	float countDownTimer = 10.0f;
 	bool allReady = false;
 public:
+	float countDownTimer = 10.0f;
 	Button readyButton;
 	Chat chat;
 	bool startGame = false;

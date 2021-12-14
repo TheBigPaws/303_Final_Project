@@ -119,17 +119,23 @@ void Player::interpolate(float dt) {
 
 	sf::Vector2f dir = receivedPos - currentPos;
 	float dir_magnitude = sqrt(dir.x * dir.x + dir.y * dir.y);
-	//dir = dir / di
 
 	if (receivedPos == receivedPos2) {//if arrived to standing in place
 		predictedDirection = sf::Vector2f(0, 0);
-		if (dir_magnitude > 0.4f) {
-			currentPos += dir / dir_magnitude * playerSpeed * dt;
+
+		//if something is weirdly far (some bug or first position information), just set it there
+		if (dir_magnitude > 300) {
+			currentPos = receivedPos;
+		}
+		//if stopped, move baaack slightly to the stop position
+		if (dir_magnitude > 20.0f) {
+			currentPos += dir / dir_magnitude * playerSpeed/2.0f * dt;
 		}
 		else {
-			currentPos = receivedPos;
+			currentPos = receivedPos; //when close enough, just set it there for precision / twitch fix
 
 		}
+		
 	}
 	else {
 		currentPos += predictedDirection * playerSpeed * dt;

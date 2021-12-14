@@ -10,7 +10,7 @@ void Button::setup(sf::Vector2f position_, sf::Vector2f size_, sf::String string
 	fillColour = fillColour_;
 	outlineColour = outlineColour_;
 	//create button rects
-	Button = constructRectangle(position_, size_,fillColour,5.0f,outlineColour_);
+	Button = constructRectangle(position_, size_,fillColour,5.0f,outlineColour);
 
 	//set up text on the button
 	text = sf::Text(string, font_);
@@ -23,7 +23,7 @@ void Button::setColors(sf::Color fillColour_, bool reset) {
 		Button.setFillColor(fillColour_);
 		return;
 	}
-	fillColour_ = fillColour;
+	fillColour = fillColour_;
 	Button.setFillColor(fillColour);
 }
 
@@ -36,10 +36,12 @@ void Button::render(sf::RenderWindow* window_) {
 void Button::update(Input* input_) {
 	//check if the mouse is hovering over it
 	if (input_->getMouseX() < Button.getPosition().x + size.x && input_->getMouseX() > Button.getPosition().x && input_->getMouseY() < Button.getPosition().y + size.y && input_->getMouseY() > Button.getPosition().y) {
-		if (!hovered) {//apply gray filter to indicate it's hovered over
+		//apply gray filter to indicate it's hovered over
+		if (!hovered) {
 			Button.setFillColor(sf::Color(fillColour.r / 2, fillColour.g / 2, fillColour.b / 2, fillColour.a));
 			hovered = true;
 		}
+
 		if (input_->isMouseLDown()) {//button is pressed
 			pressed = true;
 		}
@@ -65,7 +67,7 @@ void TextField::clearTextField(bool wasWrong) {
 		textField.setColors(sf::Color::Red);
 	}
 	else {
-		textField.setColors(sf::Color::White, true);
+		textField.setColors(textField.fillColour, true);
 	}
 	shown_string = "";
 	textField.setText(shown_string);
@@ -128,7 +130,7 @@ void TextField::update(Input* input_) {
 					shown_string += charToAdd;
 
 				}
-				textField.setText(shown_string);
+				textField.setText(shown_string,sf::Color::White);
 				textField.textResetPos();
 				break;
 			}

@@ -18,7 +18,7 @@ public:
 	sf::Vector2f position, size;
 	sf::Color fillColour, outlineColour;
 	//basic setters
-	void setText(std::string text_) { text.setString(text_); text.setFillColor(sf::Color(255 - fillColour.r, 255 - fillColour.g, 255 - fillColour.b, 255)); }
+	void setText(std::string text_, sf::Color textColour = sf::Color::Black) { text.setString(text_); text.setFillColor(textColour); }
 	void setColors(sf::Color fillColour, bool reset = false);
 	void textResetPos() { text.setPosition(position.x - text.getLocalBounds().width / 2, position.y - text.getLocalBounds().height); }
 
@@ -95,6 +95,9 @@ struct graphicPeerConnectLine {
 
 		sf::Vector2f protToPeer = peer2.position - peer1.position;
 		line = sf::RectangleShape(sf::Vector2f(sqrt(protToPeer.x * protToPeer.x + protToPeer.y * protToPeer.y), 5));
+		line.setFillColor(sf::Color::White);
+		line.setOutlineColor(sf::Color::Black);
+		line.setOutlineThickness(3.0f);
 		line.setPosition(peer1.position.x, peer1.position.y);
 		line.rotate(atan(protToPeer.y / protToPeer.x) * 57.32);
 		if (protToPeer.x < 0) {

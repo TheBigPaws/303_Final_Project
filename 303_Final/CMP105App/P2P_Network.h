@@ -1,5 +1,6 @@
 #pragma once
 #include "PacketBase.h"
+
 class P2P_Network : public PacketBase
 {
 private:

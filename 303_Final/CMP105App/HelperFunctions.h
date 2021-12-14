@@ -27,11 +27,9 @@ static sf::CircleShape constructSphere(sf::Vector2f position, float radius, sf::
 //more compact function to create and return Text
 static sf::Text constructText(sf::Vector2f position,int characterSize,std::string text, sf::Font font, sf::Color fillColour = sf::Color::Black, float outlineThickness = 0.0f, sf::Color outlineColour = sf::Color::White) {
 	
-	sf::Font fontana;
-	fontana.loadFromFile("font/arial.ttf");
 
 
-	sf::Text returnText = sf::Text(text,fontana);
+	sf::Text returnText = sf::Text(text,font);
 
 	returnText.setFillColor(fillColour);
 	returnText.setOutlineColor(outlineColour);

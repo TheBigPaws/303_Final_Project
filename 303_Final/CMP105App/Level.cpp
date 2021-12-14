@@ -62,6 +62,7 @@ void Level::update(float dt)
 			}
 		}
 		if (mainMenu.goToLobby) {
+			input->setMouseLDown(false);
 			game.setMyName(mainMenu.getEnteredName());
 			networkModule.setMyName(mainMenu.getEnteredName());
 			lobby.addPeer(networkModule.getMyInfo()->name, networkModule.getMyInfo()->IpAddress.toString(), std::to_string(networkModule.getMyInfo()->TCP_listener_Port));
@@ -105,7 +106,7 @@ void Level::update(float dt)
 		break;
 
 	case GAME:
-
+		networkModule.accept_TCP_new();
 
 		if (networkModule.someoneDisconnected) {
 			networkModule.someoneDisconnected = false;
@@ -130,6 +131,7 @@ void Level::update(float dt)
 		hdr_.senderName = networkModule.getMyInfo()->name;
 		switch (gameState) {
 		case LOBBY:
+			hdr_.game_elapsed_time = lobby.countDownTimer;
 			hdr_.information_amount = 1;
 			hdr_.information_type = LOBBY_READY_STATUS;
 			if (lobby.readyButton.fillColour == sf::Color::Green) {
@@ -297,6 +299,9 @@ void Level::decodePacket(sf::Packet packet) {
 		case LOBBY_READY_STATUS:
 			packet >> boolVar; //hit player name
 			lobby.setReady(header_.senderName, boolVar);
+			if (header_.game_elapsed_time < lobby.countDownTimer) {
+				lobby.countDownTimer = header_.game_elapsed_time;
+			}
 		break;
 		}
 	}

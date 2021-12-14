@@ -55,20 +55,47 @@ bool P2P_Network::accept_TCP_new() {
 		peers.back()->TCP_listener_Port = (unsigned short)pport; 
 
 		sf::Packet myName;
-		myName << myInfo.name;
-		peers.back()->socket.send(myName);
 
-		peers.back()->socket.setBlocking(false);
-		std::cout << "succesfully accepted " << peers.back()->name <<" at ip "<< peers.back()->IpAddress <<" with listener port "<< peers.back()->TCP_listener_Port << std::endl;
-
-		//share peers with the new 
-		if (should_share_p) {
-		sharePeers();   //exchange peers
+		//check if the name is already being used by someone else
+		bool nameIsUsed = false;
+		for (int i = 0; i < peers.size() - 1; i++) {
+			if (peers.at(i)->name == acceptedPeerName) {
+				nameIsUsed = true;
+				break;
+			}
 		}
 
-		//set up another slot for a potential peer
-		peers.push_back(new Peer);
-		return true;
+		//check if the name is already being used by me
+		if (myInfo.name == acceptedPeerName) {
+			nameIsUsed = true;
+		}
+
+		myName << myInfo.name << nameIsUsed;
+		peers.back()->socket.send(myName);
+
+		//new client with an original name succesfully connected
+		if (!nameIsUsed) {
+			peers.back()->socket.setBlocking(false);
+			std::cout << "succesfully accepted " << peers.back()->name << " at ip " << peers.back()->IpAddress << " with listener port " << peers.back()->TCP_listener_Port << std::endl;
+
+			//share peers with the new 
+			if (should_share_p) {
+				sharePeers();   //exchange peers
+			}
+
+			//set up another slot for a potential peer
+			peers.push_back(new Peer);
+			return true;
+		}else{
+			std::cout << " Unsuccesfull connect from ip " << peers.back()->IpAddress << " due to same name alrready used." << std::endl;
+
+			//delete connection to that client
+			peers.pop_back();
+			//set up another slot for a potential peer
+			peers.push_back(new Peer);
+			return false;
+		}
+		
 	}
 
 	return false;
@@ -109,18 +136,32 @@ bool P2P_Network::connect_TCP_to(sf::IpAddress hostIP, unsigned short port,bool 
 		peers.back()->socket.receive(namePacket);
 		std::string theirName;
 
-		namePacket >> theirName;
-		peers.back()->name = theirName;
+		bool nameUsed;
 
-		peers.back()->socket.setBlocking(false);
+		namePacket >> theirName >> nameUsed;
 
-		//set up another slot for a potential peer
-		// dobry den pan ucitel stevo machajdik
-		peers.push_back(new Peer);
+		if (!nameUsed) {
+			peers.back()->name = theirName;
 
-		std::cout << "Succesfully connected to "<<hostIP <<"on port "<<port << " whith name "<< theirName << std::endl;
+			peers.back()->socket.setBlocking(false);
 
-		return true;
+			//set up another slot for a potential peer
+			peers.push_back(new Peer);
+
+			std::cout << "Succesfully connected to " << hostIP << "on port " << port << " whith name " << theirName << std::endl;
+
+			return true;
+		}
+		else {
+
+			std::cout << "Name was already used" << std::endl;
+
+			//delete connection to that client
+			peers.pop_back();
+
+			peers.push_back(new Peer);
+			return false;
+		}
 
 	}
 	return false;

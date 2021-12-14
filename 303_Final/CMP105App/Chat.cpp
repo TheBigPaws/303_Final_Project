@@ -10,7 +10,7 @@ void Chat::setPosSize(sf::Vector2f position, sf::Vector2f size) {
 	chatBG = sf::RectangleShape(size);
 	chatBG.setFillColor(sf::Color::Black);
 	chatBG.setPosition(position - size / 2.0f);
-	textEntryField.setup(position + sf::Vector2f(0, size.y / 2 - 15), sf::Vector2f(size.x, 30), 15, false, sf::Color::Black, sf::Color::White);
+	textEntryField.setup(position + sf::Vector2f(0, size.y / 2 - 15), sf::Vector2f(size.x, 30), 15, false);
 
 }
 
