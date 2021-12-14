@@ -1,5 +1,8 @@
 #include "Bullet.h"
 #include <iostream>
+
+
+//Bullet constructor shooting my bullets - assign them a random id
 Bullet::Bullet(sf::Vector2f position_, sf::Vector2f direction_) {
 	bullet = constructSphere(position, 10.0f, sf::Color::Yellow, 3);
 	bullet.setOutlineThickness(3);
@@ -9,6 +12,7 @@ Bullet::Bullet(sf::Vector2f position_, sf::Vector2f direction_) {
 
 }
 
+//Bullet constructor for instantiating enemy bullets
 Bullet::Bullet(sf::Vector2f position_, sf::Vector2f direction_, sf::Uint16 id_) {
 
 	bullet = constructSphere(position, 10.0f, sf::Color::Yellow, 3);

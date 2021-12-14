@@ -6,38 +6,15 @@
 #include <queue>
 #include <chrono>
 
-enum Data_Header { ntn, CHAT_MESSAGE, NW_INFO, PLAYER_POS_ANGLE, BULLET_SHOT, AREA_CAPTURED, PLAYER_HIT,ADD_ME_TO_GAME, LOBBY_READY_STATUS };
-
-struct header {
-	std::string senderName;
-	float game_elapsed_time;
-	sf::Uint16 information_type;
-	sf::Uint16 information_amount;
-};
-
-struct playerInformation {
-
-	std::string name;
-	float position[2];
-	float lookAngle;
-};
-
-struct peerNWinfo {
-	std::string name;
-	sf::Uint32 ipAddress;
-	sf::Uint16  listenerPort;
-};
-
+//Peer struct that holds all necessary information about everyone
 struct Peer {
 	std::string name;
 
 	//tcp socket belonging to this peer
 	sf::TcpSocket socket;
 
-	//variables because SFML needs consts for some functions, 
 	sf::IpAddress IpAddress = sf::IpAddress::None;
-	unsigned short TCP_localPort = 0;
-	unsigned short TCP_remotePort = 0;
+
 	unsigned short TCP_listener_Port = 0;
 
 	//queues of packets (will be treated as tasks)
@@ -45,23 +22,26 @@ struct Peer {
 	std::queue<sf::Packet> outgoingPackets;
 };
 
+//enum describing what information is going to be in the packet
+enum Data_Header { ntn, CHAT_MESSAGE, NW_INFO, PLAYER_POS_ANGLE, BULLET_SHOT, AREA_CAPTURED, PLAYER_HIT, ADD_ME_TO_GAME, LOBBY_READY_STATUS };
 
-class PacketBase
-{
-public:
-	//CUSTOM STRUCT STREAM OVERLOAD
-	//friend sf::Packet& operator <<(sf::Packet& packet, const playerInformation& player) // player info packet ***
-	//{
-	//	return packet << player.name << player.position[0] << player.position[1] << player.lookAngle;
-	//}
-	//
-	//friend sf::Packet& operator >>(sf::Packet& packet, playerInformation& player)
-	//{
-	//	return packet >> player.name >> player.position[0] >> player.position[1] >> player.lookAngle;
-	//}
-
-	
+//packet header
+struct header {
+	std::string senderName;
+	float game_elapsed_time;
+	sf::Uint16 information_type;
+	sf::Uint16 information_amount;
 };
+
+//struct holding all relevant (networking) peer information
+struct peerNWinfo {
+	std::string name;
+	sf::Uint32 ipAddress;
+	sf::Uint16  listenerPort;
+};
+
+
+//packet stream overload functions
 
 static sf::Packet& operator <<(sf::Packet& packet, const peerNWinfo& peerInfo) // peer info packet ***
 {

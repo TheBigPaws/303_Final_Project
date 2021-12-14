@@ -13,11 +13,6 @@ Level::Level(sf::RenderWindow* hwnd, Input* in)
 	lobby.setup(hwnd, in);
 	game.setup(hwnd, in);
 
-	test_pkt_hdr_.game_elapsed_time = 0.0f;
-	test_pkt_hdr_.information_amount = 1;
-	test_pkt_hdr_.information_type = 5;
-	test_pkt_ << test_pkt_hdr_ << "test text";
-
 	networkModule.setup();
 
 
@@ -53,13 +48,22 @@ void Level::update(float dt)
 			mainMenu.attemptConnect = false;
 			networkModule.setMyName(mainMenu.getEnteredName());
 			game.setMyName(mainMenu.getEnteredName());//commented under is just ip address enter disabled
-			if (networkModule.connect_TCP_to(/*sf::IpAddress(mainMenu.getEnteredIP()*/sf::IpAddress::getLocalAddress(), (unsigned short)std::stoi(mainMenu.getEnteredPort()), true)) {
+			
+			//if user entered 1 as ip, connect to this local address
+			sf::IpAddress connectAddress = sf::IpAddress(mainMenu.getEnteredIP());
+			if (mainMenu.getEnteredIP() == "1") {//connect locally
+				connectAddress = sf::IpAddress::getLocalAddress();
+			}
+
+			connectResult connectResult_ = networkModule.connect_TCP_to(connectAddress, (unsigned short)std::stoi(mainMenu.getEnteredPort()), true);
+			
+			if (connectResult_ == SUCCESS) {
 				mainMenu.goToLobby = true;
 			}
 			else {
-				mainMenu.resetInput(true);
-
+				mainMenu.resetInput(true, connectResult_);
 			}
+			
 		}
 		if (mainMenu.goToLobby) {
 			input->setMouseLDown(false);
@@ -220,7 +224,6 @@ void Level::decodeImportantGameEvs() {
 				packet << (sf::Uint16)ev.a;//id
 				packet << ev.v1.x << ev.v1.y; //spawn pos
 				packet << ev.v2.x << ev.v2.y; //direction
-				std::cout << "In Level, i (" << networkModule.getMyInfo()->name << ") sent the bullet's id as int " << ev.a << " which is in uint16 " << (sf::Uint16)ev.a << std::endl;
 				networkModule.pushOutPacket_all(packet);
 			break;
 
@@ -264,7 +267,6 @@ void Level::decodePacket(sf::Packet packet) {
 			if (gameState == LOBBY) {
 				lobby.chat.addMessage(charbbuffer, sf::Color::White, header_.senderName);
 			}
-			//std::cout << charbbuffer << std::endl;
 		break;
 
 		case PLAYER_POS_ANGLE:
@@ -281,8 +283,6 @@ void Level::decodePacket(sf::Packet packet) {
 			packet >> a;
 			packet >> vector1.x >> vector1.y; //spawn pos
 			packet >> vector2.x >> vector2.y; //direction
-
-			std::cout << networkModule.getMyInfo()->name << "just shot IN GAME a bullet with id as int "<< a << " as uint16 ";
 
 			game.addEnemyBullet(Bullet(vector1, vector2, a));
 		break;

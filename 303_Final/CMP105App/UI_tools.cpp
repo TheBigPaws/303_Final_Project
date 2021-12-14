@@ -1,5 +1,7 @@
 #include "UI_tools.h"
 
+// ------------------------------------------------------BUTTON CODE------------------------------
+
 
 void Button::setup(sf::Vector2f position_, sf::Vector2f size_, sf::String string, int fontSize, sf::Color fillColour_, sf::Color outlineColour_) {
 

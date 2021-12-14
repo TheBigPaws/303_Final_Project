@@ -2,6 +2,7 @@
 
 #include "Framework/GameObject.h"
 
+//base class for game screens - handles linking window and input, as well as loading a font
 class Screens_Base
 {
 protected:

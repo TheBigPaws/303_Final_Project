@@ -36,8 +36,6 @@ private:
 	Game game;
 
 	P2P_Network networkModule;
-	sf::Packet test_pkt_;
-	header test_pkt_hdr_;
 
 	// Default variables for level class.
 	sf::RenderWindow* window;

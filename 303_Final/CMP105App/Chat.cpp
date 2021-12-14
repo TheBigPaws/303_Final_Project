@@ -18,8 +18,9 @@ void Chat::render() {
 	window->draw(chatBG);
 	textEntryField.render(window);
 	for (int i = bottomChatMsgIndex; i < chatMessages.size(); i++) {
+		//only render messages that fit in the chat box
 		if (chatMessages.at(i).getPosition().y > chatBG.getPosition().y && chatMessages.at(i).getPosition().y < chatBG.getPosition().y + chatBG.getSize().y - 30) { //chat is outside the console show range
-			window->draw(chatMessages.at(i));
+			window->draw(chatMessages.at(i)); 
 		}
 	}
 
@@ -61,11 +62,11 @@ void Chat::addMessage(std::string message, sf::Color msgColor, std::string sende
 	sf::Text protot = sf::Text(textMsg, arialF, 15);
 	protot.setFillColor(msgColor);
 
-	//
+	//push a new message
 	if (chatMessages.size() == 0) {
 		protot.setPosition(10, chatBG.getPosition().y + chatBG.getSize().y - 50 - protot.getLocalBounds().height);
 	}
-	else {
+	else { //if there are some, move them all up first
 
 		for (int i = 0; i < chatMessages.size(); i++) {
 			chatMessages.at(i).move(0, -chatMessages.at(i).getLocalBounds().height - 10);

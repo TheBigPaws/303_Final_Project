@@ -9,11 +9,11 @@ class MainMenu : public Screens_Base
 {
 private:
 
-	sf::Text gameTitletxt,connectPromptIP, connectPromptPort,enterNameText;
+	sf::Text gameTitletxt,connectPromptIP, connectPromptPort,enterNameText,promptExplT;
 	bool showConnectPrompt = false;
 	sf::RectangleShape connectPrompt;
 
-	//colored title
+	//coloured title
 	int titleColours[3];
 	int goalColours[3];
 	sf::Clock clrclock;
@@ -24,13 +24,29 @@ private:
 	Button connectButton,hostButton,connectCloseButton;
 
 public:
+	//cross-class communication variables
+	bool goToLobby = false;
+	bool attemptConnect = false;
+
+	//basic game loop functions
 	void setup(sf::RenderWindow* window_, Input* input_);
 	void render();
 	void update(float dt);
 
-	bool goToLobby = false;
-	bool attemptConnect = false;
+	//handles different error messages we can have from faulty connects
+	void resetInput(bool wasWrong, int errorType) {
+		IPfield.clearTextField(wasWrong);
+		PortField.clearTextField(wasWrong);
+		enterNameText.setFillColor(sf::Color::Red);
+		if (errorType == 1) {
+			enterNameText.setString("Name already used!");
+		}
+		else if (errorType == 2) {
+			enterNameText.setString("Wrong IP Address/Port!");
+		}
+	}
 
+	//input getters
 	std::string getEnteredIP() {
 		return IPfield.getString();
 	}
@@ -40,11 +56,6 @@ public:
 	std::string getEnteredName() {
 		return NameField.getString();
 	}
-	void resetInput(bool wasWrong) {
-		IPfield.clearTextField(wasWrong);
-		PortField.clearTextField(wasWrong);
-		enterNameText.setString("Name already used!");
-		enterNameText.setFillColor(sf::Color::Red);
-	}
+	
 
 };

@@ -1,50 +1,48 @@
 #pragma once
 #include "PacketBase.h"
 
-class P2P_Network : public PacketBase
+enum connectResult{SUCCESS,NAME_ALREADY_USED,WRONG_INPUT};
+
+class P2P_Network
 {
 private:
 
 	Peer myInfo;
-
-	std::string myName = "";
-
-	//  Sockets
-	std::vector<Peer*> peers = {new Peer};
-
 	sf::TcpListener mylistener;
 
-	bool isSetup = false;
-
-	
+	// Peers
+	std::vector<Peer*> peers = {new Peer};
 
 public:
-	////setup functions
+	//accessible vars from other classes indicating who (if someone did) disconnected
+	bool someoneDisconnected = false;
+	std::string disconnectedName = "";
+
+	//setup function
 	void setup();
 
+	//both return true if succesfully connected
 	bool accept_TCP_new();
-	bool connect_TCP_to(sf::IpAddress hostIP, unsigned short port, bool sharePeers_); //returns true if succesfully connected
+	connectResult connect_TCP_to(sf::IpAddress hostIP, unsigned short port, bool sharePeers_);
 
+	//packet accessing functions
 	bool anyPacketsToRead();
 	sf::Packet getPacketToRead();
 
 	void receiveAll_TCP();//receive all packets and sort them depending on where they're from
 	void sendAll_TCP(); //send all packets that were built up in the last ~ms
 
-	void pushOutPacket(std::string name,sf::Packet packet);
-	void pushOutPacket_all(sf::Packet packet);
+	void pushOutPacket(std::string name,sf::Packet packet); //only push the send packet to specified player - private information send
+	void pushOutPacket_all(sf::Packet packet); //push a packet to everyone's send queue
 
-	void sharePeers();
+	void sharePeers(); //function that shares my peers with the person connecting to me
 
-	//void decodePackets();
-
-
+	//getters, setters
 	int getPeerCount() { return peers.size() - 1; }
 	Peer* getPeer(int at) { return peers.at(at); }
 	Peer* getLastAddedPeer() { return peers.at(peers.size()-2); }
 	Peer* getMyInfo() { return &myInfo; }
 	void setMyName(std::string name) { myInfo.name = name; }
-	bool someoneDisconnected = false;
-	std::string disconnectedName = "";
+	
 };
 

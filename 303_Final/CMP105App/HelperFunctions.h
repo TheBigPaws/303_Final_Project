@@ -24,23 +24,8 @@ static sf::CircleShape constructSphere(sf::Vector2f position, float radius, sf::
 	return returnCirc;
 }
 
-//more compact function to create and return Text
-static sf::Text constructText(sf::Vector2f position,int characterSize,std::string text, sf::Font font, sf::Color fillColour = sf::Color::Black, float outlineThickness = 0.0f, sf::Color outlineColour = sf::Color::White) {
-	
 
-
-	sf::Text returnText = sf::Text(text,font);
-
-	returnText.setFillColor(fillColour);
-	returnText.setOutlineColor(outlineColour);
-	returnText.setOutlineThickness(outlineThickness);
-	returnText.setCharacterSize(characterSize);
-	returnText.setPosition(sf::Vector2f(position.x - returnText.getLocalBounds().width/2, position.y - returnText.getLocalBounds().height / 2));
-
-	return returnText;
-}
-
-//more compact function to create and return Text
+//more compact function to edit an existing text
 static void setTextVal(sf::Text * TextToEdit,sf::Vector2f position, int characterSize, sf::Color fillColour = sf::Color::Black, float outlineThickness = 0.0f, sf::Color outlineColour = sf::Color::White) {
 
 

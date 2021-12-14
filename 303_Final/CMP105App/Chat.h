@@ -4,6 +4,8 @@
 #include <chrono>
 #include <ctime>
 
+
+//CHAT CLASS
 class Chat : public Screens_Base {
 private:
 	TextField textEntryField;
